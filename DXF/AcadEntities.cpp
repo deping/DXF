@@ -2545,14 +2545,15 @@ void CalPolygonPViewport(const DblPoints& polygonMS, const CDblPoint& centerPS, 
     // Get center, width, height in MS
     pointsPS = polygonMS;
     CDblPoint origin;
+    double twistAngleRadians = twistAngle * M_PI / 180.0;
     for (auto& pt : pointsPS)
     {
-        origin.Rotate(pt, twistAngle);
+        origin.Rotate(pt, twistAngleRadians);
     }
     double widthMS;
     GetCenterWH(pointsPS, centerMS, widthMS, heightMS);
     CDblPoint tmp(centerMS);
-    origin.Rotate(centerMS, -twistAngle);
+    origin.Rotate(centerMS, -twistAngleRadians);
     double dxInMS = centerMS.x - tmp.x;
     double dyInMS = centerMS.y - tmp.y;
 	
