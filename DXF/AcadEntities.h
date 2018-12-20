@@ -1098,6 +1098,10 @@ struct DXF_API LayoutData
 {
 	LayoutData();
 	void WriteDxf(DxfWriter& writer);
+    // convenient functions to add polygonal AcadViewport
+    void AddPolygonalViewport(const DblPoints & polygonPS, const CDblPoint & centerMS, double heighMS, double twistAngle/*degrees*/);
+    void AddPolygonalViewportByWidth(const DblPoints & polygonMS, const CDblPoint & centerPS, double widthPS, double twistAngle/*degrees*/);
+    void AddPolygonalViewportByScale(const DblPoints & polygonMS, const CDblPoint & centerPS, double scale, double twistAngle/*degrees*/);
 
 	// Must be *Paper_Space, *Paper_Space0, *Paper_Space1, ...
 	// Don't set it if you create DxfData manually. DxfWriter will set it.
@@ -1109,7 +1113,7 @@ struct DXF_API LayoutData
 	// m_MinExt and m_MaxExt defines the default viewport size in paperspace.
 	CDblPoint m_MinExt; // in millimeters
 	CDblPoint m_MaxExt; // in millimeters
-	// 包含AcadViewport和AcadPolygonViewport对象
+	// Line, arc, dims, ... and AcadViewport objects
 	EntityList m_Objects;
 	// Don't set it if you create DxfData manually. DxfWriter will set it.
 	int m_LayoutOrder;

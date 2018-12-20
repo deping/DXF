@@ -2507,6 +2507,103 @@ void LayoutData::WriteDxf(DxfWriter& writer)
 	}
 }
 
+void GetCenterWH(const DblPoints& polygon, CDblPoint& center, double& width, double& height)
+{
+    const size_t size = polygon.size();
+    double minX, maxX, minY, maxY;
+    auto xless = [](const CDblPoint& p1, const CDblPoint& p2)
+    {
+        return p1.x < p2.x;
+    };
+    auto yless = [](const CDblPoint& p1, const CDblPoint& p2)
+    {
+        return p1.y < p2.y;
+    };
+    minX = std::min_element(&polygon[0], &polygon[0] + size, xless)->x;
+    minY = std::min_element(&polygon[0], &polygon[0] + size, yless)->y;
+    maxX = std::max_element(&polygon[0], &polygon[0] + size, xless)->x;
+    maxY = std::max_element(&polygon[0], &polygon[0] + size, yless)->y;
+    center.x = (minX + maxX) / 2.0;
+    center.y = (minY + maxY) / 2.0;
+    width = maxX - minX;
+    height = maxY - minY;
+}
+
+// if byWidth is true, scaleRelated is width in paper space;
+// if byWidth is false, scaleRelated is scale from model space to paper space;
+void CalPolygonPViewport(const DblPoints& polygonMS, const CDblPoint& centerPS, double scaleRelated, bool byWidth,
+    double twistAngle, DblPoints& pointsPS, CDblPoint& centerMS, double& heightMS)
+{
+    // Get center, width, height in MS
+    pointsPS = polygonMS;
+    CDblPoint origin;
+    for (auto& pt : pointsPS)
+    {
+        origin.Rotate(pt, twistAngle);
+    }
+    double widthMS;
+    GetCenterWH(pointsPS, centerMS, widthMS, heightMS);
+    CDblPoint tmp(centerMS);
+    origin.Rotate(centerMS, -twistAngle);
+    double dxInMS = centerMS.x - tmp.x;
+    double dyInMS = centerMS.y - tmp.y;
+	
+    // translate points from MS to PS
+    double scale;
+    if (byWidth)
+        scale = scaleRelated / widthMS;
+    else
+        scale = scaleRelated;
+    CDblPoint centerInPS2;
+    centerInPS2.x = centerMS.x * scale;
+    centerInPS2.y = centerMS.y * scale;
+    double dxInPS = centerPS.x - centerInPS2.x;
+    double dyInPS = centerPS.y - centerInPS2.y;
+    for (auto& pt : pointsPS)
+    {
+        pt.x = (pt.x + dxInMS) * scale + dxInPS;
+        pt.y = (pt.y + dyInMS) * scale + dyInPS;
+    }
+}
+
+void LayoutData::AddPolygonalViewport(const DblPoints & polygonPS, const CDblPoint & centerMS, double heighMS, double twistAngle)
+{
+    std::shared_ptr<AcadLWPLine> polyline(new AcadLWPLine);
+    CDblPoint centerPS;
+    double widthPS, heightPS;
+    GetCenterWH(polygonPS, centerPS, widthPS, heightPS);
+    polyline->m_Vertices = std::move(polygonPS);
+    polyline->m_Closed = true;
+    m_Objects.push_back(polyline);
+    std::shared_ptr<AcadViewport> viewport(new AcadViewport);
+    viewport->m_PaperspaceCenter = centerPS;
+    viewport->m_PaperspaceWidth = widthPS;
+    viewport->m_PaperspaceHeight = heightPS;
+    viewport->m_ModelSpaceCenter = centerMS;
+    viewport->m_ModelSpaceHeight = heighMS;
+    viewport->m_TwistAngle = twistAngle;//in degrees
+    viewport->m_ClipEnt = polyline;
+    m_Objects.push_back(viewport);
+}
+
+void LayoutData::AddPolygonalViewportByWidth(const DblPoints & polygonMS, const CDblPoint & centerPS, double widthPS, double twistAngle)
+{
+    DblPoints polygonPS;
+    CDblPoint centerMS;
+    double heightMS;
+    CalPolygonPViewport(polygonMS, centerPS, widthPS, true, twistAngle, polygonPS, centerMS, heightMS);
+    AddPolygonalViewport(polygonPS, centerMS, heightMS, twistAngle);
+}
+
+void LayoutData::AddPolygonalViewportByScale(const DblPoints & polygonMS, const CDblPoint & centerPS, double scale, double twistAngle)
+{
+    DblPoints polygonPS;
+    CDblPoint centerMS;
+    double heightMS;
+    CalPolygonPViewport(polygonMS, centerPS, scale, false, twistAngle, polygonPS, centerMS, heightMS);
+    AddPolygonalViewport(polygonPS, centerMS, heightMS, twistAngle);
+}
+
 // To be implemented. But it is very hard and trivial.
 // For now, end user can select all entities by pressing ctrl+A,
 // move all entities to some point, all dims will show.
