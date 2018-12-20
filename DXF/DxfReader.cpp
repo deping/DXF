@@ -3711,6 +3711,7 @@ void DxfReader::ReadViewport(EntityList* pObjList)
 			{
 				int flag = atoi(buffer);
 				HasClipEnt = (flag & 0x10000) != 0;
+                vp->m_locked = (flag & 0x4000) != 0;
 			}
 			break;
 		case 340:

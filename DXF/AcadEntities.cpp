@@ -2341,11 +2341,19 @@ void AcadViewport::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	auto clipEnt = m_ClipEnt.lock();
 	if (clipEnt)
 	{
-		writer.dxfInt(90, 0x10000 | 0x8060);
+        int status = 0x10000 | 0x8060;
+        if (m_locked)
+            status |= 0x4000;
+		writer.dxfInt(90, status);
 		writer.dxfHex(340, clipEnt->m_Handle);
 	}
-	else
-		writer.dxfInt(90, 0x8060);
+    else
+    {
+        int status = 0x8060;
+        if (m_locked)
+            status |= 0x4000;
+		writer.dxfInt(90, status);
+    }
 
 	writer.dxfString(1, "");
 	writer.dxfInt(281, 0);

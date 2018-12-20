@@ -1079,6 +1079,7 @@ struct DXF_API AcadViewport : public EntAttribute
 	CDblPoint m_ModelSpaceCenter;
 	double m_ModelSpaceHeight;
 	double m_TwistAngle;//in degrees
+    bool m_locked;
 
 	// if m_ClipEnt is valid, viewport will be clipped by an entity, usually a polygon.
 	std::weak_ptr<EntAttribute> m_ClipEnt;
