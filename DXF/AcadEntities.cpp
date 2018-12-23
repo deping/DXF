@@ -521,6 +521,7 @@ AcadViewport::AcadViewport()
 	, m_ModelSpaceCenter(100, 100)
 	, m_ModelSpaceHeight(100)
 	, m_TwistAngle(0)
+    , m_locked(false)
 {
 }
 
