@@ -16,6 +16,7 @@
 
 #include "DxfReader.h"
 #include "DxfData.h"
+#include "ifstream.h"
 
 using namespace std;
 #pragma warning(disable:4996)
@@ -26,12 +27,14 @@ const char g_PaperSpace[] = "*Paper_Space";
 const size_t g_LenOfPaperSpace = strlen(g_PaperSpace);
 
 DxfReader::DxfReader(DxfData& graph)
-	:m_Graph(graph)
+	: m_Graph(graph)
+    , m_DxfFile(*new DXF::ifstream)
 {
 }
 
 DxfReader::~DxfReader(void)
 {
+    delete &m_DxfFile;
 }
 
 bool DxfReader::ReadDxf(const char* dxfFileName, bool OnlyReadModelSpace)

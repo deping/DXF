@@ -14,7 +14,6 @@
 #include <map>
 #include <functional>
 
-#include "ifstream.h"
 #include "AcadEntities.h"
 #include "ImpExpMacro.h"
 
@@ -25,6 +24,7 @@ struct BlockDef;
 struct EntAttribute;
 struct LayoutData;
 struct NameHandle;
+class ifstream;
 
 class DXF_API DxfReader
 {
@@ -119,7 +119,7 @@ private:
 	void Reset();
 
 private:
-	DXF::ifstream m_DxfFile;
+	DXF::ifstream& m_DxfFile;
 	DxfData& m_Graph;
 	AcadDimInternal m_Attribute;
 	bool m_OnlyReadModelSpace;
