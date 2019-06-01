@@ -475,7 +475,6 @@ AcadLine::AcadLine()
 AcadLWPLine::AcadLWPLine()
 	: m_Closed(false)
 	, m_Width(1.0)
-	, m_IsWidthValid(false)
 {
 }
 
@@ -930,6 +929,49 @@ double AcadDim::GetLinearScaleFactor(const DxfData& graph) const
 	return 1.0;
 }
 #pragma endregion
+
+void AcadLWPLine::SetWidth(size_t Index, double startWidth, double endWidth)
+{
+	ASSERT_DEBUG_INFO(Index < m_Vertices.size());
+	size_t count = m_startWidths.size();
+    if (count < Index + 1)
+    {
+        m_startWidths.resize(size_t(Index + 1));
+        m_endWidths.resize(size_t(Index + 1));
+    }
+    m_startWidths[Index] = startWidth;
+    m_endWidths[Index] = endWidth;
+}
+
+void AcadLWPLine::SetStartWidth(size_t Index, double startWidth)
+{
+    ASSERT_DEBUG_INFO(Index < m_Vertices.size());
+    size_t count = m_startWidths.size();
+    if (count < Index + 1)
+    {
+        m_startWidths.resize(size_t(Index + 1));
+        m_endWidths.resize(size_t(Index + 1));
+    }
+    m_startWidths[Index] = startWidth;
+}
+
+void AcadLWPLine::SetEndWidth(size_t Index, double endWidth)
+{
+    ASSERT_DEBUG_INFO(Index < m_Vertices.size());
+    size_t count = m_startWidths.size();
+    if (count < Index + 1)
+    {
+        m_startWidths.resize(size_t(Index + 1));
+        m_endWidths.resize(size_t(Index + 1));
+    }
+    m_endWidths[Index] = endWidth;
+}
+
+void AcadLWPLine::SetWidths(const std::vector<double>& startWidths, const std::vector<double>& endWidths)
+{
+    m_startWidths = startWidths;
+    m_endWidths = endWidths;
+}
 
 void AcadLWPLine::SetBulge(size_t Index, double Bulge)
 {
@@ -2178,12 +2220,17 @@ void AcadLWPLine::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	writer.dxfString(100, "AcDbPolyline");
 	writer.dxfInt(90, int(m_Vertices.size()));
 	writer.dxfInt(70, (m_Closed ? 1 : 0) | 128);//128 = 启用线型生成 
-	if (m_IsWidthValid)
+	if (IsConstWidth())
 		writer.dxfReal(43, m_Width);
 	for (size_t i = 0; i < m_Vertices.size(); ++i)
 	{
 		writer.dxfReal(10, m_Vertices[i].x);
 		writer.dxfReal(20, m_Vertices[i].y);
+        if (!IsConstWidth())
+        {
+            writer.dxfReal(40, m_startWidths[i]);
+            writer.dxfReal(41, m_endWidths[i]);
+        }
 		double bulge = GetBulge(i);
 		if (bulge != 0.0)
 			writer.dxfReal(42, bulge);

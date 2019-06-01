@@ -948,15 +948,20 @@ struct DXF_API AcadLWPLine : public EntAttribute
 	void SetConstWidth(double width)
 	{
 		m_Width = width;
-		m_IsWidthValid = true;
 	}
-	void SetConstWidth()
-	{
-		m_Width = 0;
-		m_IsWidthValid = false;
-	}
-	bool IsConstWidth() { return m_IsWidthValid; }
-	double GetConstWdith() { return m_IsWidthValid ? m_Width : 0.0; }
+	double GetConstWdith() { return m_Width; }
+    bool IsConstWidth()
+    {
+        return m_startWidths.empty();
+    }
+
+    void SetWidth(size_t Index, double startWidth, double endWidth);
+    void SetStartWidth(size_t Index, double startWidth);
+    void SetEndWidth(size_t Index, double endWidth);
+    void SetWidths(const std::vector<double>& startWidths, const std::vector<double>& endWidths);
+    const std::vector<double>& startWidths() { return m_startWidths; }
+    const std::vector<double>& endWidths() { return m_endWidths; }
+
 	void SetBulge(size_t Index, double Bulge);
 	void PushBulge(double bulge);
 	double GetBulge(size_t Index) const;
@@ -965,8 +970,9 @@ struct DXF_API AcadLWPLine : public EntAttribute
 
 private:
 	double m_Width;
-	bool   m_IsWidthValid;
 	std::vector<double> m_Bulges;
+    std::vector<double> m_startWidths;
+    std::vector<double> m_endWidths;
 };
 
 struct DXF_API AcadMText : public EntAttribute

@@ -3374,6 +3374,12 @@ void DxfReader::ReadLwpolyline(EntityList* pObjList)
 		case 20:
 			pLine->m_Vertices[pLine->m_Vertices.size()-1].y = atof(buffer);
 			break;
+		case 40:
+			pLine->SetStartWidth(pLine->m_Vertices.size()-1, atof(buffer));
+			break;
+		case 41:
+			pLine->SetEndWidth(pLine->m_Vertices.size()-1, atof(buffer));
+			break;
 		case 42:
 			pLine->SetBulge(pLine->m_Vertices.size()-1, atof(buffer));
 			break;
