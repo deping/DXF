@@ -1,4 +1,4 @@
-## DYNAMIC LINK LIBRARY : DxfReader Project Overview
+## DXF Reader/Writer Project Overview
 
 Author: Deping Chen
 Date: 2017/10/15 - 2017/11/15
