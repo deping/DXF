@@ -123,7 +123,7 @@ namespace DxfTestCs
 
             var pH3 = new AcadHatch();
             pH3.AddEntity(pP3, -1);
-            pH3.AddAssociatedEntity(pC, -1);
+            pH3.AddAssociatedEntity(pP3, -1);
             pH3.m_PatternName = "SOLID";
             pP3.m_Reactors.Add(new WeakReference(pH3));
             dxf.m_Objects.Add(pP3);

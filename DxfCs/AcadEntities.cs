@@ -1957,7 +1957,7 @@ namespace DXF
             this.m_PatternScale = 1;
             this.m_PatternAngle = 0;
             this.m_PixelSize = 2.5;
-            this.m_OuterFlag = BoundaryPathFlag.Outer;
+            this.m_OuterFlag = BoundaryPathFlag.Outer | BoundaryPathFlag.Export;
         }
 
         public enum FillFlag
@@ -2069,7 +2069,7 @@ namespace DXF
                     var pLWPLine = pEnt as AcadLWPLine;
                     if (pLWPLine != null && pLWPLine.m_Closed)
                     {
-                        writer.dxfInt(92, (int)flag);
+                        writer.dxfInt(92, (int)(flag | BoundaryPathFlag.LWPline));
                         writer.dxfInt(72, pLWPLine.HasBulges() ? 1 : 0);
                         writer.dxfInt(73, 1);
                         writer.dxfInt(93, (int)pLWPLine.m_Vertices.Count);

@@ -200,7 +200,7 @@ AcadHatch::AcadHatch()
 	, m_PatternScale(1)
 	, m_PatternAngle(0)
 	, m_PixelSize(2.5)
-	, m_OuterFlag(BoundaryPathFlag(Outer))
+	, m_OuterFlag(BoundaryPathFlag(Outer | Export))
 {
 }
 
@@ -1515,7 +1515,7 @@ void AcadHatch::WriteLoop(DxfWriter& writer, int loopIndex)
 			auto pLWPLine = dynamic_cast<AcadLWPLine*>(pEnt.get());
 			if (pLWPLine && pLWPLine->m_Closed)
 			{
-				writer.dxfInt(92, flag);
+				writer.dxfInt(92, flag | LWPline);
 				writer.dxfInt(72, pLWPLine->HasBulges() ? 1 : 0);
 				writer.dxfInt(73, 1);
 				writer.dxfInt(93, int(pLWPLine->m_Vertices.size()));
