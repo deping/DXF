@@ -10,8 +10,8 @@
 *.dll
 *.exe
 BoostLog
-DxfCs
-DxfTestCs
+# DxfCs
+# DxfTestCs
 EmfParser
 FindRectangle
 RemoteMessage
@@ -19,3 +19,5 @@ rpc-arith
 x64
 .vs
 ipch
+**/obj/**/*
+**/bin/**/*
