@@ -63,6 +63,10 @@ public:
 		x = Point.x;
 		y = Point.y;
 	}
+	bool IsNull()
+	{
+		return x == 0.0 && y == 0.0;
+	}
 	void SetPoint(double u, double v)
 	{
 		x = u;

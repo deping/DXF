@@ -709,7 +709,8 @@ namespace DXF
                 writer.dxfString(2, m_BlockName);
             }
             writer.coord(10, m_DefPoint.x, m_DefPoint.y);
-            writer.coord(11, m_TextPosition.x, m_TextPosition.y);
+            if (m_TextPosition != null)
+                writer.coord(11, m_TextPosition.x, m_TextPosition.y);
         }
 
         public void WriteOverride(DxfWriter writer)
@@ -837,7 +838,7 @@ namespace DXF
         //定义点（在 WCS 中），定义点含义与标注类型相关。
         public CDblPoint m_DefPoint = new CDblPoint();
         //标注文字的中点（在 OCS 中）
-        public CDblPoint m_TextPosition = new CDblPoint();
+        public CDblPoint m_TextPosition = null;
         //值 0 - 6 是表示标注类型的整数值。值 32、64 和 128 是添加到整数值中的位值（在 R13 及以后的版本中始终设置值 32）
         public int m_DimType;
         public AcAttachmentPoint m_Attachment;
@@ -1705,6 +1706,7 @@ namespace DXF
     {
         public AcadDimInternal()
         {
+            this.m_TextPosition = new CDblPoint();
             this.m_ReactorHandles = new List<int>();
         }
 
@@ -1726,8 +1728,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 1 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDbAlignedDimension");
             writer.coord(13, m_ExtLine1Point.x, m_ExtLine1Point.y);
@@ -1760,8 +1770,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 5 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDb3PointAngularDimension");
             writer.coord(13, m_FirstEnd.x, m_FirstEnd.y);
@@ -1786,8 +1804,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 2 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDb2LineAngularDimension");
             writer.coord(13, m_FirstStart.x, m_FirstStart.y);
@@ -1816,8 +1842,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 3 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDbDiametricDimension");
             writer.coord(15, m_ChordPoint.x, m_ChordPoint.y);
@@ -1844,8 +1878,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 4 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDbRadialDimension");
             writer.coord(15, m_ChordPoint.x, m_ChordPoint.y);
@@ -1868,8 +1910,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 0 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDbAlignedDimension");
             writer.coord(13, m_ExtLine1Point.x, m_ExtLine1Point.y);
@@ -1891,8 +1941,16 @@ namespace DXF
             WriteHeader(writer, bInPaperSpace);
             WriteOverride(writer);
             int type = 6 | 0x20;
+            if (m_TextPosition != null)
+                type |= 0x80;
             writer.dxfInt(70, type);
             writer.dxfInt(71, 5); //文字正中对齐
+            if (m_TextPosition != null)
+            {
+                writer.dxfInt(73, 0);
+                writer.dxfInt(74, 0);
+                writer.dxfInt(75, 0);
+            }
 
             writer.dxfString(100, "AcDbOrdinateDimension");
             writer.coord(13, m_OrdPoint.x, m_OrdPoint.y);

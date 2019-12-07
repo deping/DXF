@@ -33,26 +33,26 @@ namespace DxfTestCs
             // Test DXF read/write
             Global.EnableDebugInfo(true);
             DxfData dxf = new DxfData();
-            //auto pDim = std::make_shared<AcadDimAln>();
-            //pDim->m_DefPoint.SetPoint(80, 120);
-            //pDim->m_TextPosition.SetPoint(30, 70);
-            //pDim->m_ExtLine1Point.SetPoint(0, 0);
-            //pDim->m_ExtLine2Point.SetPoint(100, 100);
-            //pDim->m_DimStyleName = "ISO-25";
-            //dxf.m_Objects.push_back(pDim);
+            var pDim = new AcadDimAln();
+            pDim.m_DefPoint.SetPoint(80, 120);
+            pDim.m_TextPosition = new CDblPoint(30, 70);
+            pDim.m_ExtLine1Point.SetPoint(0, 0);
+            pDim.m_ExtLine2Point.SetPoint(100, 100);
+            pDim.m_DimStyleName = "ISO-25";
+            dxf.m_Objects.Add(pDim);
             //auto pTable = std::make_shared<AcadTable>();
             //pTable->m_InsertionPoint.SetPoint(0, 0);
             //pTable->InitializeCells(2, 2, DXF::CellType::TEXT_CELL);
             //pTable->SetColWidth(600);
             //pTable->SetRowHeight(330);
-            //for (int i=0; i<pTable->m_RowCount; ++i)
-            //	for (int j = 0; j < pTable->m_ColCount; ++j)
-            //	{
-            //		Cell& c = pTable->GetCell(i, j);
-            //		c.m_TextHeight = 250;
-            //		std::shared_ptr<CellText>& ct = dynamic_pointer_cast<CellText>(c.m_Content);
-            //		ct->m_Text = "0*0";
-            //	}
+            //for (int i = 0; i < pTable->m_RowCount; ++i)
+            //    for (int j = 0; j < pTable->m_ColCount; ++j)
+            //    {
+            //        Cell & c = pTable->GetCell(i, j);
+            //        c.m_TextHeight = 250;
+            //        std::shared_ptr<CellText> & ct = dynamic_pointer_cast<CellText>(c.m_Content);
+            //        ct->m_Text = "0*0";
+            //    }
             //dxf.m_Objects.push_back(pTable);
 
             //====================== 文字样式 ====================== 
@@ -79,7 +79,7 @@ namespace DxfTestCs
 
             AcadDimRot dim = new AcadDimRot();
             dim.m_DefPoint.SetPoint(80, 120);
-            dim.m_TextPosition.SetPoint(30, 70);
+            dim.m_TextPosition = new CDblPoint(30, 70);
             dim.m_ExtLine1Point.SetPoint(0, 0);
             dim.m_ExtLine2Point.SetPoint(100, 100);
             dim.m_DimStyleName = "标注1";

@@ -1234,7 +1234,8 @@ void AcadDim::WriteHeader(DxfWriter& writer, bool bInPaperSpace)
 	if (!m_BlockName.empty())
 		writer.dxfString(2, m_BlockName);
 	writer.coord(10, m_DefPoint.x, m_DefPoint.y);
-	writer.coord(11, m_TextPosition.x, m_TextPosition.y);
+	if (!m_TextPosition.IsNull())
+		writer.coord(11, m_TextPosition.x, m_TextPosition.y);
 }
 
 void AcadDim::WriteOverride(DxfWriter& writer)
@@ -1353,8 +1354,16 @@ void AcadDimAln::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 1 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
+	if (!m_TextPosition.IsNull())
+	{
+		writer.dxfInt(73, 0);
+		writer.dxfInt(74, 0);
+		writer.dxfInt(75, 0);
+	}
 
 	writer.dxfString(100, "AcDbAlignedDimension");
 	writer.coord(13, m_ExtLine1Point.x, m_ExtLine1Point.y);
@@ -1368,8 +1377,16 @@ void AcadDimAng3P::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 5 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
+	if (!m_TextPosition.IsNull())
+	{
+		writer.dxfInt(73, 0);
+		writer.dxfInt(74, 0);
+		writer.dxfInt(75, 0);
+	}
 
 	writer.dxfString(100, "AcDb3PointAngularDimension");
 	writer.coord(13, m_FirstEnd.x, m_FirstEnd.y);
@@ -1382,8 +1399,16 @@ void AcadDimAng::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 2 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
+	if (!m_TextPosition.IsNull())
+	{
+		writer.dxfInt(73, 0);
+		writer.dxfInt(74, 0);
+		writer.dxfInt(75, 0);
+	}
 
 	writer.dxfString(100, "AcDb2LineAngularDimension");
 	writer.coord(13, m_FirstStart.x, m_FirstStart.y);
@@ -1396,8 +1421,16 @@ void AcadDimDia::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 3 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
+	if (!m_TextPosition.IsNull())
+	{
+		writer.dxfInt(73, 0);
+		writer.dxfInt(74, 0);
+		writer.dxfInt(75, 0);
+	}
 
 	writer.dxfString(100, "AcDbDiametricDimension");
 	writer.coord(15, m_ChordPoint.x, m_ChordPoint.y);
@@ -1409,8 +1442,16 @@ void AcadDimRad::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 4 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
+	if (!m_TextPosition.IsNull())
+	{
+		writer.dxfInt(73, 0);
+		writer.dxfInt(74, 0);
+		writer.dxfInt(75, 0);
+	}
 
 	writer.dxfString(100, "AcDbRadialDimension");
 	writer.coord(15, m_ChordPoint.x, m_ChordPoint.y);
@@ -1422,6 +1463,8 @@ void AcadDimRot::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 0 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
 
@@ -1437,8 +1480,16 @@ void AcadDimOrd::WriteDxf(DxfWriter& writer, bool bInPaperSpace)
 	WriteHeader(writer, bInPaperSpace);
 	WriteOverride(writer);
 	int type = 6 | 0x20;
+	if (!m_TextPosition.IsNull())
+		type |= 0x80;
 	writer.dxfInt(70, type);
 	writer.dxfInt(71, 5);//文字正中对齐
+	if (!m_TextPosition.IsNull())
+	{
+		writer.dxfInt(73, 0);
+		writer.dxfInt(74, 0);
+		writer.dxfInt(75, 0);
+	}
 
 	writer.dxfString(100, "AcDbOrdinateDimension");
 	writer.coord(13, m_OrdPoint.x, m_OrdPoint.y);

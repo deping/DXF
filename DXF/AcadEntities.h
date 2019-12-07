@@ -347,6 +347,8 @@ struct DXF_API AcadDim : public EntAttribute
 	std::string m_BlockName;
 	//定义点（在 WCS 中），定义点含义与标注类型相关。
 	CDblPoint m_DefPoint;
+	// 应该使用指针, nullptr表示AutoCAD计算的位置, 否则使用指定的位置.
+	// 但是为了避免对已有代码的影响过大,就这么将就了.
 	//标注文字的中点（在 OCS 中）
 	CDblPoint m_TextPosition;
 	//值 0 - 6 是表示标注类型的整数值。值 32、64 和 128 是添加到整数值中的位值（在 R13 及以后的版本中始终设置值 32）

@@ -2318,7 +2318,14 @@ void DxfReader::SetDimCommon(AcadDim* pDim)
 	pDim->m_DimStyleName = m_Attribute.m_DimStyleName;
 	pDim->m_BlockName = m_Attribute.m_BlockName;
 	pDim->m_DefPoint = m_Attribute.m_DefPoint;
-	pDim->m_TextPosition = m_Attribute.m_TextPosition;
+	if ((m_Attribute.m_DimType & 0x80) != 0)
+	{
+		pDim->m_TextPosition = m_Attribute.m_TextPosition;
+	}
+	else
+	{
+		pDim->m_TextPosition.SetPoint(0, 0);
+	}
 	pDim->m_DimType = m_Attribute.m_DimType;
 	pDim->m_Attachment = m_Attribute.m_Attachment;
 	pDim->m_TextRotation = m_Attribute.m_TextRotation;
