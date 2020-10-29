@@ -14,27 +14,27 @@
 #define EOF -1
 #endif
 
-//ÎÄ¼şÊäÈëÁ÷ifstreamÊÇ¸öºÜºÃµÄ¶Á¹Ì¶¨¸ñÊ½ÎÄ¼şµÄÀà£¬µ«ºÜ²»¿É¿¿£¬
-//operator>>¾­³£ÄªÃûÆäÃîµÄfail£¬»òreadº¯ÊıÖ»¶Á³öÒ»²¿·ÖÊı¾İ¡£
-//ËùÒÔĞ´ÁËÒÔÏÂÄ£·ÂÀà£¬ÒªÌØ±ğ×¢Òâsetdelimiter·½·¨£¬ÕâÊÇÎÒÎªÁË¼ò»¯
-//operator>>¶øÌØÉèµÄ£¬ÓÃ»§Ó¦¸ÃÔÚµ÷ÓÃoperator>>Ö®Ç°µ÷ÓÃ¡£
+//æ–‡ä»¶è¾“å…¥æµifstreamæ˜¯ä¸ªå¾ˆå¥½çš„è¯»å›ºå®šæ ¼å¼æ–‡ä»¶çš„ç±»ï¼Œä½†å¾ˆä¸å¯é ï¼Œ
+//operator>>ç»å¸¸è«åå…¶å¦™çš„failï¼Œæˆ–readå‡½æ•°åªè¯»å‡ºä¸€éƒ¨åˆ†æ•°æ®ã€‚
+//æ‰€ä»¥å†™äº†ä»¥ä¸‹æ¨¡ä»¿ç±»ï¼Œè¦ç‰¹åˆ«æ³¨æ„setdelimiteræ–¹æ³•ï¼Œè¿™æ˜¯æˆ‘ä¸ºäº†ç®€åŒ–
+//operator>>è€Œç‰¹è®¾çš„ï¼Œç”¨æˆ·åº”è¯¥åœ¨è°ƒç”¨operator>>ä¹‹å‰è°ƒç”¨ã€‚
 namespace DXF
 {
 	const int goodbit = 0x0;
 	const int eofbit = 0x1;
 	const int failbit = 0x2;
 	const int statmask = 0x3;
-	typedef unsigned char seekdir; 
-	const seekdir beg=0, cur=1, end=2;
+	typedef unsigned char seekdir;
+	const seekdir beg = 0, cur = 1, end = 2;
 
-	//ËùÓĞÓ°ÏìÁ÷Ö¸ÕëµÄ²Ù×÷£¬³ıÁËseekg£¬Èç¹ûÁ÷×´Ì¬Ê§°Ü(fail()==true)£¬¶¼»áÁ¢¼´·µ»Ø¡£
+	//æ‰€æœ‰å½±å“æµæŒ‡é’ˆçš„æ“ä½œï¼Œé™¤äº†seekgï¼Œå¦‚æœæµçŠ¶æ€å¤±è´¥(fail()==true)ï¼Œéƒ½ä¼šç«‹å³è¿”å›ã€‚
 
 	class ifstream
 	{
 	public:
 		ifstream(void);
-		ifstream(const char* filename);
-		ifstream(const wchar_t* filename);
+		ifstream(const char *filename);
+		ifstream(const wchar_t *filename);
 		void reset()
 		{
 			clear();
@@ -43,8 +43,8 @@ namespace DXF
 		//call close()
 		~ifstream(void);
 		//open a file
-		void open(const char* filename);
-		void open(const wchar_t* filename);
+		void open(const char *filename);
+		void open(const wchar_t *filename);
 		//close a file
 		void close();
 		//status
@@ -57,66 +57,67 @@ namespace DXF
 		// test if no state bits are set
 		bool good();
 		// test if any stream operation has failed
-		operator void*();
+		operator void *();
 		// test if no stream operation has failed
 		bool operator!();
-		//ÉèÖÃÁ÷×´Ì¬
-		void clear(int State=goodbit);
-		//¶ÁÈ¡Á÷×´Ì¬
+		//è®¾ç½®æµçŠ¶æ€
+		void clear(int State = goodbit);
+		//è¯»å–æµçŠ¶æ€
 		int rdstate();
-		//ÔÚÁ÷µÄÔ­×´Ì¬Ö®ÉÏÌí¼ÓĞÂ×´Ì¬
+		//åœ¨æµçš„åŸçŠ¶æ€ä¹‹ä¸Šæ·»åŠ æ–°çŠ¶æ€
 		void setstate(int state);
-		//ÉèÖÃ³ıÁË¿Õ°×Ö®ÍâµÄfield·Ö¸ô·û£¬½«Ó°ÏìËùÓĞµÄoperator>>£¬
-		//Èç¹û´«Èë0£¬±íÊ¾Ö»½ÓÊÜ¿Õ°××÷Îª·Ö¸ô·û¡£
-		void setdelimiter(const char* delimiter);
-		//¶Á²¼¶ûÖµ
-		ifstream& operator>>(bool& Val);
-		//¶Á×Ö·û´®
-		ifstream& operator>>(char* Str);
-		//¶ÁÈ¡ÏÂÒ»¸ö×Ö·û£¬²»¹ÜËüÊÇ²»ÊÇ·Ö¸ô·û¡£
-		ifstream& operator>>(char& Val);
-		//¶ÁÈ¡¸¡µãÊı
-		ifstream& operator>>(float& Val);
-		ifstream& operator>>(double& Val);
-		//¶ÁÈ¡ÕûÊı
-		ifstream& operator>>(short& Val);
-		ifstream& operator>>(unsigned short& Val);
-		ifstream& operator>>(int& Val);
-		ifstream& operator>>(unsigned int& Val);
-		ifstream& operator>>(long& Val);
-		ifstream& operator>>(unsigned long& Val);
-		//È¡µÃÁ÷µÄµ±Ç°Ö¸Õë
+		//è®¾ç½®é™¤äº†ç©ºç™½ä¹‹å¤–çš„fieldåˆ†éš”ç¬¦ï¼Œå°†å½±å“æ‰€æœ‰çš„operator>>ï¼Œ
+		//å¦‚æœä¼ å…¥0ï¼Œè¡¨ç¤ºåªæ¥å—ç©ºç™½ä½œä¸ºåˆ†éš”ç¬¦ã€‚
+		void setdelimiter(const char *delimiter);
+		//è¯»å¸ƒå°”å€¼
+		ifstream &operator>>(bool &Val);
+		//è¯»å­—ç¬¦ä¸²
+		ifstream &operator>>(char *Str);
+		//è¯»å–ä¸‹ä¸€ä¸ªå­—ç¬¦ï¼Œä¸ç®¡å®ƒæ˜¯ä¸æ˜¯åˆ†éš”ç¬¦ã€‚
+		ifstream &operator>>(char &Val);
+		//è¯»å–æµ®ç‚¹æ•°
+		ifstream &operator>>(float &Val);
+		ifstream &operator>>(double &Val);
+		//è¯»å–æ•´æ•°
+		ifstream &operator>>(short &Val);
+		ifstream &operator>>(unsigned short &Val);
+		ifstream &operator>>(int &Val);
+		ifstream &operator>>(unsigned int &Val);
+		ifstream &operator>>(long &Val);
+		ifstream &operator>>(unsigned long &Val);
+		//å–å¾—æµçš„å½“å‰æŒ‡é’ˆ
 		unsigned long tellg();
-		//ÉèÖÃÁ÷µÄµ±Ç°Ö¸Õë
-		ifstream& seekg(unsigned long pos);
-		ifstream& seekg(long off, seekdir origin);
-		//È¡µÃÎÄ¼ş´óĞ¡
+		//è®¾ç½®æµçš„å½“å‰æŒ‡é’ˆ
+		ifstream &seekg(unsigned long pos);
+		ifstream &seekg(long off, seekdir origin);
+		//å–å¾—æ–‡ä»¶å¤§å°
 		unsigned long getsize();
 		//getline & read
-		ifstream& getline(char *Str, unsigned int count);
-		ifstream& read(char *Str, unsigned int count);
-		//µ±countµÈÓÚnumeric_limits<unsigned int>::max()Ê±±íÊ¾Ö»¿¼ÂÇstop,²»¿¼ÂÇcount¡£
-		//Á÷µÄµ±Ç°Ö¸ÕëÇ°½øcount¸ö×Ö½Ú¡£Èç¹ûÔÚÕâÖ®Ç°ÕÒµ½stop×Ö·û£¬ÄÇÃ´Á÷µÄµ±Ç°Ö¸ÕëÍ£ÔÚstop
-		//×Ö·ûÖ®ºó¡£
-		ifstream& ignore(unsigned int count, char stop=EOF);
-		//Í¬ÉÏ¡£²»Í¬µÄÊÇ¿ÉÒÔ´«Èë¶à¸östop×Ö·û¡£
-		ifstream& ignore(unsigned int count, const char* stop);
-		//Á÷µÄµ±Ç°Ö¸Õë»ØÍËcount¸ö×Ö½Ú¡£Èç¹ûÍËµ½ÎÄ¼ş¿ªÊ¼Ö®Ç°£¬failbit½«±»ÉèÖÃ£¬
-		//Í¬Ê±£¬Á÷µÄµ±Ç°Ö¸ÕëÖ¸ÏòÎÄ¼ş¿ªÊ¼´¦¡£
-		ifstream& backward(unsigned int count);
-		//Ìø¹ı¿Õ°×
-		ifstream& skipws();
+		ifstream &getline(char *Str, unsigned int count);
+		ifstream &read(char *Str, unsigned int count);
+		//å½“countç­‰äºnumeric_limits<unsigned int>::max()æ—¶è¡¨ç¤ºåªè€ƒè™‘stop,ä¸è€ƒè™‘countã€‚
+		//æµçš„å½“å‰æŒ‡é’ˆå‰è¿›countä¸ªå­—èŠ‚ã€‚å¦‚æœåœ¨è¿™ä¹‹å‰æ‰¾åˆ°stopå­—ç¬¦ï¼Œé‚£ä¹ˆæµçš„å½“å‰æŒ‡é’ˆåœåœ¨stop
+		//å­—ç¬¦ä¹‹åã€‚
+		ifstream &ignore(unsigned int count, char stop = EOF);
+		//åŒä¸Šã€‚ä¸åŒçš„æ˜¯å¯ä»¥ä¼ å…¥å¤šä¸ªstopå­—ç¬¦ã€‚
+		ifstream &ignore(unsigned int count, const char *stop);
+		//æµçš„å½“å‰æŒ‡é’ˆå›é€€countä¸ªå­—èŠ‚ã€‚å¦‚æœé€€åˆ°æ–‡ä»¶å¼€å§‹ä¹‹å‰ï¼Œfailbitå°†è¢«è®¾ç½®ï¼Œ
+		//åŒæ—¶ï¼Œæµçš„å½“å‰æŒ‡é’ˆæŒ‡å‘æ–‡ä»¶å¼€å§‹å¤„ã€‚
+		ifstream &backward(unsigned int count);
+		//è·³è¿‡ç©ºç™½
+		ifstream &skipws();
+
 	private:
 		void init();
 		void getfld(char *buffer);
-		void do_get(__int64& Val);
-		void do_get(double& Val);
+		void do_get(__int64 &Val);
+		void do_get(double &Val);
 		bool isdelim(char code);
 		CFileMapping m_FileMapping;
-		const char* m_pStart;//ÎÄ¼şµÄÆğµãÓ³ÉäÖÁĞéÄâÄÚ´æµÄÎ»ÖÃ
-		const char* m_pEnd;//ÎÄ¼şµÄÖÕµãÓ³ÉäÖÁĞéÄâÄÚ´æµÄÎ»ÖÃ
-		const char* m_pCur;//µ±Ç°ÎÄ¼şÖ¸ÕëÎ»ÖÃ
+		const char *m_pStart; //æ–‡ä»¶çš„èµ·ç‚¹æ˜ å°„è‡³è™šæ‹Ÿå†…å­˜çš„ä½ç½®
+		const char *m_pEnd;	  //æ–‡ä»¶çš„ç»ˆç‚¹æ˜ å°„è‡³è™šæ‹Ÿå†…å­˜çš„ä½ç½®
+		const char *m_pCur;	  //å½“å‰æ–‡ä»¶æŒ‡é’ˆä½ç½®
 		int m_state;
-		char* m_delimiter;
+		char *m_delimiter;
 	};
-}
+} // namespace DXF

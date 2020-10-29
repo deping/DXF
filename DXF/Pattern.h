@@ -14,45 +14,45 @@
 
 namespace DXF
 {
-class ifstream;
+	class ifstream;
 
-struct Pattern_Line
-{
-	double angle; // in degrees
-	double x_origin;
-	double y_origin;
-	double delta_x;
-	double delta_y;
-	std::vector<double> dashes;
-};
+	struct Pattern_Line
+	{
+		double angle; // in degrees
+		double x_origin;
+		double y_origin;
+		double delta_x;
+		double delta_y;
+		std::vector<double> dashes;
+	};
 
-class PatternManager;
-class Pattern
-{
-public:
-	//·µ»Øtrue±íÊ¾ÔÚÍ¼°¸ÎÄ¼şpatFileÖĞÕÒµ½patNameÍ¼°¸£¬·ñÔòÃ»ÕÒµ½¡£
-	bool LoadPattern(PatternManager& manager, const char* patName);
+	class PatternManager;
+	class Pattern
+	{
+	public:
+		//è¿”å›trueè¡¨ç¤ºåœ¨å›¾æ¡ˆæ–‡ä»¶patFileä¸­æ‰¾åˆ°patNameå›¾æ¡ˆï¼Œå¦åˆ™æ²¡æ‰¾åˆ°ã€‚
+		bool LoadPattern(PatternManager &manager, const char *patName);
 
-public:
-	std::string name;
-	std::string description;
-	std::vector<std::unique_ptr<Pattern_Line>> dashlines;
-};
+	public:
+		std::string name;
+		std::string description;
+		std::vector<std::unique_ptr<Pattern_Line>> dashlines;
+	};
 
-class PatternManager
-{
-public:
-	PatternManager();
-	~PatternManager();
-	PatternManager(const PatternManager&) = delete;
-	void SetPatFile(const char* pPatFile);
-	bool IsValid() const;
-	Pattern* FindPattern(const char* ptname);
+	class PatternManager
+	{
+	public:
+		PatternManager();
+		~PatternManager();
+		PatternManager(const PatternManager &) = delete;
+		void SetPatFile(const char *pPatFile);
+		bool IsValid() const;
+		Pattern *FindPattern(const char *ptname);
 
-private:
-	friend class Pattern;
-	std::unique_ptr<DXF::ifstream> m_PatFile;
-	std::vector<std::unique_ptr<Pattern>> m_Patterns;
-};
+	private:
+		friend class Pattern;
+		std::unique_ptr<DXF::ifstream> m_PatFile;
+		std::vector<std::unique_ptr<Pattern>> m_Patterns;
+	};
 
-}
+} // namespace DXF

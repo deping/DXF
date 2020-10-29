@@ -16,60 +16,59 @@
 namespace DXF
 {
 
-class ifstream;
+	class ifstream;
 
-struct Linetype_Descriptor
-{
-	Linetype_Descriptor()
+	struct Linetype_Descriptor
 	{
-		type = 0;
-		scale_length = 1.0;
-		bRelative = true;
-		rotate = 0;
-		xoffset = 0;
-		yoffset = 0;
-
-	}
-	int type;//0 -- simple, 1--shape, 2--text
-	struct
-	{
-		std::string shapename_text;
-		std::string shxfilename_style;
-		double scale_length;
-		bool bRelative;
-		double rotate;//in radians
-		double xoffset;
-		double yoffset;
+		Linetype_Descriptor()
+		{
+			type = 0;
+			scale_length = 1.0;
+			bRelative = true;
+			rotate = 0;
+			xoffset = 0;
+			yoffset = 0;
+		}
+		int type; //0 -- simple, 1--shape, 2--text
+		struct
+		{
+			std::string shapename_text;
+			std::string shxfilename_style;
+			double scale_length;
+			bool bRelative;
+			double rotate; //in radians
+			double xoffset;
+			double yoffset;
+		};
 	};
-};
 
-class LinetypeManager;
-class Linetype
-{
-public:
-	//·µ»Øtrue±íÊ¾ÔÚÏßĞÍÎÄ¼şlinFileNameÖĞÕÒµ½lineTypeNameÏßĞÍ£¬·ñÔòÃ»ÕÒµ½¡£
-	bool LoadLinetype(LinetypeManager& manager, const char* lineTypeName);
+	class LinetypeManager;
+	class Linetype
+	{
+	public:
+		//è¿”å›trueè¡¨ç¤ºåœ¨çº¿å‹æ–‡ä»¶linFileNameä¸­æ‰¾åˆ°lineTypeNameçº¿å‹ï¼Œå¦åˆ™æ²¡æ‰¾åˆ°ã€‚
+		bool LoadLinetype(LinetypeManager &manager, const char *lineTypeName);
 
-public:
-	std::string line_name;
-	std::string line_descrip;
-	std::vector<Linetype_Descriptor> descriptors;
-};
+	public:
+		std::string line_name;
+		std::string line_descrip;
+		std::vector<Linetype_Descriptor> descriptors;
+	};
 
-class LinetypeManager
-{
-public:
-	LinetypeManager();
-	~LinetypeManager();
-	LinetypeManager(const LinetypeManager&) = delete;
-	void SetLinFile(const char* pLinFile);
-	bool IsValid() const;
-	Linetype* FindLinetype(const char* lineTypeName);
+	class LinetypeManager
+	{
+	public:
+		LinetypeManager();
+		~LinetypeManager();
+		LinetypeManager(const LinetypeManager &) = delete;
+		void SetLinFile(const char *pLinFile);
+		bool IsValid() const;
+		Linetype *FindLinetype(const char *lineTypeName);
 
-private:
-	friend class Linetype;
-	std::unique_ptr<DXF::ifstream> m_LinFile;
-	std::vector<std::unique_ptr<Linetype>> m_Linetypes;
-};
+	private:
+		friend class Linetype;
+		std::unique_ptr<DXF::ifstream> m_LinFile;
+		std::vector<std::unique_ptr<Linetype>> m_Linetypes;
+	};
 
-}
+} // namespace DXF

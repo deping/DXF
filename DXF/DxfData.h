@@ -18,41 +18,42 @@ using namespace std;
 #include "AcadEntities.h"
 #include "ImpExpMacro.h"
 
-namespace DXF {
-
-struct EntAttribute;
-class DXF_API DxfData
+namespace DXF
 {
-public:
-	DxfData();
-	virtual ~DxfData();
-	std::shared_ptr<EntAttribute> FindEntity(int handle);
-	void Reset();
 
-	double m_LinetypeScale;
+	struct EntAttribute;
+	class DXF_API DxfData
+	{
+	public:
+		DxfData();
+		virtual ~DxfData();
+		std::shared_ptr<EntAttribute> FindEntity(int handle);
+		void Reset();
 
-	//±»Í¼ÔªÒıÓÃµÄÏßĞÍ¡¢Í¼²ã¡¢ÎÄ×ÖÑùÊ½¡¢±ê×¢ÑùÊ½²»¿ÉÒÔ±»É¾³ı£¬Ò²²»¿ÉÒÔ±»¸üÃû¡£
-	std::set<std::string> m_Linetypes;
-	std::map<std::string, LayerData> m_Layers;
-	std::map<std::string, TextStyleData> m_TextStyles;
-	std::map<std::string, DimStyleData> m_DimStyles;
-	std::map<std::string, MLeaderStyle> m_MLeaderStyles;
-	std::map<std::string, TableStyle> m_TableStyles;
+		double m_LinetypeScale;
 
-	//±£´æÄ£ĞÍ¿Õ¼ä¶ÔÏó
-	EntityList m_Objects;
-	//±£´æËùÓĞ²¼¾Ö, include *Papaer_Space
-	std::map<std::string, std::shared_ptr<LayoutData>> m_Layouts;
-	//±£´æAutoCAD¿éµÄ¶¨Òå
-	std::map<std::string, std::shared_ptr<BlockDef>> m_RealBlockDefs;
+		//è¢«å›¾å…ƒå¼•ç”¨çš„çº¿å‹ã€å›¾å±‚ã€æ–‡å­—æ ·å¼ã€æ ‡æ³¨æ ·å¼ä¸å¯ä»¥è¢«åˆ é™¤ï¼Œä¹Ÿä¸å¯ä»¥è¢«æ›´åã€‚
+		std::set<std::string> m_Linetypes;
+		std::map<std::string, LayerData> m_Layers;
+		std::map<std::string, TextStyleData> m_TextStyles;
+		std::map<std::string, DimStyleData> m_DimStyles;
+		std::map<std::string, MLeaderStyle> m_MLeaderStyles;
+		std::map<std::string, TableStyle> m_TableStyles;
 
-public: // Used internally
-	int PrepareBeforeWrite();
+		//ä¿å­˜æ¨¡å‹ç©ºé—´å¯¹è±¡
+		EntityList m_Objects;
+		//ä¿å­˜æ‰€æœ‰å¸ƒå±€, include *Papaer_Space
+		std::map<std::string, std::shared_ptr<LayoutData>> m_Layouts;
+		//ä¿å­˜AutoCADå—çš„å®šä¹‰
+		std::map<std::string, std::shared_ptr<BlockDef>> m_RealBlockDefs;
 
-private:
-	friend class DxfReader;
-	// Keep last generated block number, start from 1, *D1, *D2, etc
-	mutable int m_TmpBlockNo;
-};
+	public: // Used internally
+		int PrepareBeforeWrite();
 
-}
+	private:
+		friend class DxfReader;
+		// Keep last generated block number, start from 1, *D1, *D2, etc
+		mutable int m_TmpBlockNo;
+	};
+
+} // namespace DXF

@@ -14,13 +14,13 @@
 
 namespace DXF {
 
-DXF_API void SetThreadDebugInfo(const char* fileName);
-DXF_API std::string GetThreadDebugInfoFileName();
-DXF_API void EnableDebugInfo(bool value);
+	DXF_API void SetThreadDebugInfo(const char* fileName);
+	DXF_API std::string GetThreadDebugInfoFileName();
+	DXF_API void EnableDebugInfo(bool value);
 
-// The following functions/classes are just for internal use, so they are not exported.
-void __cdecl PrintDebugInfo(const char* szMsg, ...);
-void __cdecl PrintDebugInfo(const char* fileName, int lineNo, const char* funcName, const char* szMsg, ...);
+	// The following functions/classes are just for internal use, so they are not exported.
+	void __cdecl PrintDebugInfo(const char* szMsg, ...);
+	void __cdecl PrintDebugInfo(const char* fileName, int lineNo, const char* funcName, const char* szMsg, ...);
 #define PRINT_DEBUG_INFO(msg, ...) \
 	PrintDebugInfo(__FILE__, __LINE__, __FUNCTION__, msg, __VA_ARGS__)
 #define ASSERT_DEBUG_INFO(boolExp)														\
@@ -33,62 +33,62 @@ void __cdecl PrintDebugInfo(const char* fileName, int lineNo, const char* funcNa
 	throw std::runtime_error("Invalid DXF file.")																\
 
 
-inline int hextoi(const char* src)
-{
-	return std::stoi(src, nullptr, 16);
-}
-const char* right(const std::string& src, size_t num);
-bool RightCompareNoCase(const std::string& str1, size_t num, const char* str2);
-std::string TrimLeftSpace(const std::string& str);
-std::string TrimRightSpace(const std::string& str);
-std::string TrimSpace(const std::string& str);
-typedef const char* cstr;
-DXF_API cstr AdvanceUtf8(const char* pStart, const char* pEnd, int bytes);
+	inline int hextoi(const char* src)
+	{
+		return std::stoi(src, nullptr, 16);
+	}
+	const char* right(const std::string& src, size_t num);
+	bool RightCompareNoCase(const std::string& str1, size_t num, const char* str2);
+	std::string TrimLeftSpace(const std::string& str);
+	std::string TrimRightSpace(const std::string& str);
+	std::string TrimSpace(const std::string& str);
+	typedef const char* cstr;
+	DXF_API cstr AdvanceUtf8(const char* pStart, const char* pEnd, int bytes);
 
-class CDblPoint
-{
-public:
-	CDblPoint()
+	class CDblPoint
 	{
-		x = 0.0;
-		y = 0.0;
-	}
-	CDblPoint(double X, double Y)
-	{
-		x = X;
-		y = Y;
-	}
-	CDblPoint(const CDblPoint& Point)
-	{
-		x = Point.x;
-		y = Point.y;
-	}
-	bool IsNull()
-	{
-		return x == 0.0 && y == 0.0;
-	}
-	void SetPoint(double u, double v)
-	{
-		x = u;
-		y = v;
-	}
-	//»∆thisµ„∞—pointµ„–˝◊™angleª°∂»µΩ–¬µƒŒª÷√
-	void Rotate(/*in, out*/CDblPoint& point, double angle/*in radians*/) const;
+	public:
+		CDblPoint()
+		{
+			x = 0.0;
+			y = 0.0;
+		}
+		CDblPoint(double X, double Y)
+		{
+			x = X;
+			y = Y;
+		}
+		CDblPoint(const CDblPoint& Point)
+		{
+			x = Point.x;
+			y = Point.y;
+		}
+		bool IsNull()
+		{
+			return x == 0.0 && y == 0.0;
+		}
+		void SetPoint(double u, double v)
+		{
+			x = u;
+			y = v;
+		}
+		//ÁªïthisÁÇπÊääpointÁÇπÊóãËΩ¨angleÂºßÂ∫¶Âà∞Êñ∞ÁöÑ‰ΩçÁΩÆ
+		void Rotate(/*in, out*/CDblPoint& point, double angle/*in radians*/) const;
 
-	double x;
-	double y;
-};
+		double x;
+		double y;
+	};
 
-class TraceFunction
-{
-public:
-	TraceFunction(const char* fileName, const char* funcName);
-	~TraceFunction();
+	class TraceFunction
+	{
+	public:
+		TraceFunction(const char* fileName, const char* funcName);
+		~TraceFunction();
 
-private:
-	const char* m_FileName;
-	const char* m_FuncName;
-};
+	private:
+		const char* m_FileName;
+		const char* m_FuncName;
+	};
 
 #define TRACE_FUNCTION(arguments, ...)										\
 PrintDebugInfo(__FILE__, __LINE__, __FUNCTION__, arguments, __VA_ARGS__);	\

@@ -19,1121 +19,1152 @@
 #include "ACADConst.h"
 #include "utility.h"
 
-namespace DXF {
-
-using DblPoints = std::vector<CDblPoint>;
-
-int GetArrowHeadType(const char* value);
-const char* GetPredefinedArrowHeadBlockName(int predefinedArrowheadType);
-
-class DxfData;
-class DxfWriter;
-
-struct NameHandle
+namespace DXF
 {
-	std::string name;
-	int handle;
-};
 
-struct DXF_API LayerData
-{
-	LayerData();
+	using DblPoints = std::vector<CDblPoint>;
 
-	std::string m_Linetype;
-	long m_Color;
-	long m_LineWeight;
-	bool m_Plottable;
-};
+	int GetArrowHeadType(const char *value);
+	const char *GetPredefinedArrowHeadBlockName(int predefinedArrowheadType);
 
-struct DXF_API TextStyleData
-{
-	TextStyleData();
+	class DxfData;
+	class DxfWriter;
 
-	std::string m_PrimaryFontFile;//.shx file used for single byte character.
-	std::string m_BigFontFile;//.shx file used for multi-byte character.
+	struct NameHandle
+	{
+		std::string name;
+		int handle;
+	};
 
-	//"SimSun",                   "ËÎÌå",
-	//"SimHei",                   "ºÚÌå",
-	//"KaiTi_GB2312",             "¿¬Ìå_GB2312",
-	//"LiSu",                     "Á¥Êé",
-	//"FangSong_GB2312",          "·ÂËÎ_GB2312",
-	//"YouYuan",                  "Ó×Ô²",
-	//"STCaiyun",                 "»ªÎÄ²ÊÔÆ",
-	//"STFangsong",               "»ªÎÄ·ÂËÎ",
-	//"STXihei",                  "»ªÎÄÏ¸ºÚ",
-	//"STXingkai",                "»ªÎÄĞĞ¿¬",
-	//"STXinwei",                 "»ªÎÄĞÂÎº",
-	//"STZhongsong",              "»ªÎÄÖĞËÎ",
-	//"FZShuTi",                  "·½ÕıÊæÌå",
-	//"FZYaoTi",                  "·½ÕıÒ¦Ìå",
-	//"Simsun (Founder Extended)","ËÎÌå-·½Õı³¬´ó×Ö·û¼¯",
-	//"NSimSun",                  "ĞÂËÎÌå"
-	// If you specify m_TrueType, then m_PrimaryFontFile and m_BigFontFile are ignored.
-	std::string m_TrueType;// SimSun, SimHei, etc
-	double m_Height;
-	double m_WidthFactor;
-	double m_ObliqueAngle;//in degrees within the range of -85 to +85 degrees.
-};
+	struct DXF_API LayerData
+	{
+		LayerData();
 
-//Ã¶¾ÙÖµµÄË³ĞòÓ¦¸ÃÓëDimStyleDataµÄ³ÉÔ±±äÁ¿Ò»ÖÂ
-enum
-{
-	DIMENSIONLINECOLOR
-	, DIMENSIONLINEWEIGHT
-	, DIMLINE1SUPPRESS
-	, DIMLINE2SUPPRESS
-	, FORCELINEINSIDE
+		std::string m_Linetype;
+		long m_Color;
+		long m_LineWeight;
+		bool m_Plottable;
+	};
 
-	, EXTENSIONLINECOLOR
-	, EXTENSIONLINEWEIGHT
-	, EXTENSIONLINEEXTEND
-	, EXTENSIONLINEOFFSET
-	, EXTLINE1SUPPRESS
-	, EXTLINE2SUPPRESS
+	struct DXF_API TextStyleData
+	{
+		TextStyleData();
 
-	, ARROWHEAD1TYPE
-	, ARROWHEAD2TYPE
-	, ARROWHEADSIZE
-	, CENTERTYPE
-	, CENTERMARKSIZE
+		std::string m_PrimaryFontFile; //.shx file used for single byte character.
+		std::string m_BigFontFile;	   //.shx file used for multi-byte character.
 
-	, TEXTSTYLE
-	, TEXTHEIGHT
-	, TEXTCOLOR
-	, VERTICALTEXTPOSITION
-	, HORIZONTALTEXTPOSITION
-	, TEXTALIGN
-	, TEXTGAP
-	, TEXT
-	, FIT
-	, TEXTMOVEMENT
-	, TEXTINSIDE
+		//"SimSun",                   "å®‹ä½“",
+		//"SimHei",                   "é»‘ä½“",
+		//"KaiTi_GB2312",             "æ¥·ä½“_GB2312",
+		//"LiSu",                     "éš¶ä¹¦",
+		//"FangSong_GB2312",          "ä»¿å®‹_GB2312",
+		//"YouYuan",                  "å¹¼åœ†",
+		//"STCaiyun",                 "åæ–‡å½©äº‘",
+		//"STFangsong",               "åæ–‡ä»¿å®‹",
+		//"STXihei",                  "åæ–‡ç»†é»‘",
+		//"STXingkai",                "åæ–‡è¡Œæ¥·",
+		//"STXinwei",                 "åæ–‡æ–°é­",
+		//"STZhongsong",              "åæ–‡ä¸­å®‹",
+		//"FZShuTi",                  "æ–¹æ­£èˆ’ä½“",
+		//"FZYaoTi",                  "æ–¹æ­£å§šä½“",
+		//"Simsun (Founder Extended)","å®‹ä½“-æ–¹æ­£è¶…å¤§å­—ç¬¦é›†",
+		//"NSimSun",                  "æ–°å®‹ä½“"
+		// If you specify m_TrueType, then m_PrimaryFontFile and m_BigFontFile are ignored.
+		std::string m_TrueType; // SimSun, SimHei, etc
+		double m_Height;
+		double m_WidthFactor;
+		double m_ObliqueAngle; //in degrees within the range of -85 to +85 degrees.
+	};
 
-	, UNITSFORMAT
-	, UNITSPRECISION
-	, SUPPRESSLEADINGZEROS
-	, SUPPRESSTRAILINGZEROS
-	, ANGLESUPPRESSLEADINGZEROS
-	, ANGLESUPPRESSTRAILINGZEROS
-	, ANGLEFORMAT
-	, ANGLEPRECISION
-	, LINEARSCALEFACTOR
+	//æšä¸¾å€¼çš„é¡ºåºåº”è¯¥ä¸DimStyleDataçš„æˆå‘˜å˜é‡ä¸€è‡´
+	enum
+	{
+		DIMENSIONLINECOLOR,
+		DIMENSIONLINEWEIGHT,
+		DIMLINE1SUPPRESS,
+		DIMLINE2SUPPRESS,
+		FORCELINEINSIDE
 
-	, TEXTROTATION
-	, OBLIQUEANGLE
+		,
+		EXTENSIONLINECOLOR,
+		EXTENSIONLINEWEIGHT,
+		EXTENSIONLINEEXTEND,
+		EXTENSIONLINEOFFSET,
+		EXTLINE1SUPPRESS,
+		EXTLINE2SUPPRESS
 
-	, LASTBIT//±ØĞëÎ»ÓÚ×îºó
-};
+		,
+		ARROWHEAD1TYPE,
+		ARROWHEAD2TYPE,
+		ARROWHEADSIZE,
+		CENTERTYPE,
+		CENTERMARKSIZE
 
-struct DXF_API DimStyleData
-{
-	DimStyleData();
-	//´´½¨ISO-25ÑùÊ½
-	explicit DimStyleData(int/*unused*/);
+		,
+		TEXTSTYLE,
+		TEXTHEIGHT,
+		TEXTCOLOR,
+		VERTICALTEXTPOSITION,
+		HORIZONTALTEXTPOSITION,
+		TEXTALIGN,
+		TEXTGAP,
+		TEXT,
+		FIT,
+		TEXTMOVEMENT,
+		TEXTINSIDE
 
-	//³ß´çÏß
-	long DimensionLineColor;//³õÊ¼Öµ:acByBlock
-	long DimensionLineWeight;//³õÊ¼Öµ:acLnWtByBlock
-	bool DimLine1Suppress;//³õÊ¼Öµ:false
-	bool DimLine2Suppress;//³õÊ¼Öµ:false
-	//true: ¼´Ê¹µ±ÎÄ×Ö»æÖÆÔÚ³ß´ç½çÏßÖ®Íâ£¬Ò²Òª°Ñ³ß´çÏßÖÃÓÚ³ß´ç½çÏßÖ®ÄÚ¡£ 
-	//false: µ±ÎÄ×Ö»æÖÆÔÚ³ß´ç½çÏßÖ®ÍâÊ±£¬²»Ç¿ÖÆ°Ñ³ß´çÏßÖÃÓÚ³ß´ç½çÏßÖ®ÄÚ¡£
-	//³õÊ¼Öµ:true
-	bool ForceLineInside;
+		,
+		UNITSFORMAT,
+		UNITSPRECISION,
+		SUPPRESSLEADINGZEROS,
+		SUPPRESSTRAILINGZEROS,
+		ANGLESUPPRESSLEADINGZEROS,
+		ANGLESUPPRESSTRAILINGZEROS,
+		ANGLEFORMAT,
+		ANGLEPRECISION,
+		LINEARSCALEFACTOR
 
-	//³ß´ç½çÏß
-	long ExtensionLineColor;//³õÊ¼Öµ:acByBlock
-	long ExtensionLineWeight;//³õÊ¼Öµ:acLnWtByBlock
-	double ExtensionLineExtend;//Ö¸¶¨³ß´ç½çÏß³¬³ö³ß´çÏßµÄ³¤¶È//³õÊ¼Öµ:0
-	double ExtensionLineOffset;//Ö¸¶¨³ß´ç½çÏß´Ó³ß´ç½çÏß¸ùµã´¦µÄÆ«ÒÆ//³õÊ¼Öµ:0
-	bool ExtLine1Suppress;//true--²»»æÖÆµÚÒ»Ìõ³ß´ç½çÏß//³õÊ¼Öµ:false
-	bool ExtLine2Suppress;//true--²»»æÖÆµÚ¶şÌõ³ß´ç½çÏß//³õÊ¼Öµ:false
+		,
+		TEXTROTATION,
+		OBLIQUEANGLE,
+		TEXTPOSITION
 
-	//¼ıÍ·
-	long ArrowHead1Type;//È¡Öµ·¶Î§£ºenum AcDimArrowheadType//³õÊ¼Öµ:acArrowDefault
-	long ArrowHead2Type;//È¡Öµ·¶Î§£ºenum AcDimArrowheadType//³õÊ¼Öµ:acArrowDefault
-	std::string ArrowHead1Block;//µ±Arrowhead1Type = acArrowUserDefinedÊ±Æğ×÷ÓÃ
-	std::string ArrowHead2Block;//µ±Arrowhead2Type = acArrowUserDefinedÊ±Æğ×÷ÓÃ
-	double ArrowHeadSize;//³õÊ¼Öµ:0.18
-	long CenterType;//È¡Öµ·¶Î§£ºenum AcDimCenterType//³õÊ¼Öµ:acCenterMark
-	double CenterMarkSize;//³õÊ¼Öµ:0.09
+		,
+		LASTBIT //å¿…é¡»ä½äºæœ€å
+	};
 
-	//ÎÄ×Ö
-	std::string TextStyle;//³ß´çÎÄ×ÖºÍ¹«²îÎÄ×ÖµÄÑùÊ½
-	double TextHeight;//µ±TextStyleÓĞ¹Ì¶¨×Ö¸ßÊ±£¬Õâ¸öÊôĞÔ±»ºöÂÔ¡£//³õÊ¼Öµ:0.18
-	long TextColor;//³õÊ¼Öµ:acByBlock
-	//È¡Öµ·¶Î§£ºenum AcDimVerticalJustification//³õÊ¼Öµ:acVertCentered
-	long VerticalTextPosition;
-	//È¡Öµ·¶Î§£ºenum AcDimHorizontalJustification//³õÊ¼Öµ:acHorzCentered
-	long HorizontalTextPosition;
-	bool TextAlign;//Ö¸¶¨ÎÄ×Ö·½Ïò¡£true--Ë®Æ½,false--Óë³ß´çÏß¶ÔÆë//³õÊ¼Öµ:false
-	//µ±ÎªÁËÈİÄÉ±ê×¢ÎÄ×Ö¶ø¶Ï¿ª³ß´çÏßÊ±£¬Ö¸¶¨±ê×¢ÎÄ×ÖºÍ³ß´çÏß¼äµÄ¾àÀë¡£//³õÊ¼Öµ:0.045
-	//µ±ÎÄ×ÖÎ»ÓÚ³ß´çÏßÉÏ·½Ê±£¬Ö¸¶¨ÁË±ê×¢ÎÄ×ÖºÍ³ß´çÏß¼äµÄ¾àÀë¡£
-	double TextGap;
-	//Èç¹ûÎª¿Õ»òÎª¡°<>¡±£¬±ê×¢²âÁ¿½«»æÖÆÎªÎÄ×Ö£»Èç¹ûÎª¡° ¡±£¨Ò»¸ö¿Õ¸ñ£©£¬ÎÄ×Ö½«±»ÒÖÖÆ¡£
-	//ÀıÈç"§¶<>mm"¡£
-	std::string Text;
-	//µ÷Õû
-	//È¡Öµ·¶Î§£ºenum AcDimFit£¬Ö¸¶¨µ±³ß´ç½çÏßÄÚ¿Õ¼ä²»×ãÊ±²ÉÈ¡µÄµ÷Õû´ëÊ©
-	long Fit;//³õÊ¼Öµ:acBestFit
-	//Ö¸¶¨ÒÆ¶¯ÎÄ×ÖÊ±ÈçºÎµ÷Õû³ß´çÏß£¬¶Ô³ÌĞò³öÍ¼Ã»ÓĞÓ°Ïì£¬µ«Ó°Ïì¶ÔËù³öÍ¼±à¼­£¬Ó¦²ÉÓÃÈ±Ê¡Öµ¡£
-	//È¡Öµ·¶Î§£ºenum AcDimTextMovement
-	long TextMovement;//³õÊ¼Öµ:acMoveTextNoLeader
-	//true: Ç¿ÖÆ±ê×¢ÎÄ×ÖÎ»ÓÚ³ß´ç½çÏßÄÚ¡£ 
-	//false: ½öµ±ÓĞ×ã¹»¿Õ¼äÊ±°Ñ±ê×¢ÎÄ×ÖÖÃÓÚ³ß´ç½çÏßÄÚ¡£
-	//½ö¶ÔÏßĞÔºÍ½Ç¶È±ê×¢Æğ×÷ÓÃ£¬¶Ô°ë¾¶ºÍÖ±¾¶±ê×¢²»Æğ×÷ÓÃ¡£
-	//³õÊ¼Öµ:false
-	bool TextInside;
+	struct DXF_API DimStyleData
+	{
+		DimStyleData();
+		//åˆ›å»ºISO-25æ ·å¼
+		explicit DimStyleData(int /*unused*/);
 
-	//Ö÷µ¥Î»
-	//È¡Öµ·¶Î§£ºenum AcDimLUnits,Ö¸¶¨³ı½Ç¶ÈÍâËùÓĞ±ê×¢µÄµ¥Î»¸ñÊ½//³õÊ¼Öµ:acDimLDecimal
-	long UnitsFormat;
-	//È¡Öµ·¶Î§£ºenum AcDimPrecision,Ö¸¶¨³ı½Ç¶ÈÍâËùÓĞ±ê×¢µÄĞ¡ÊıÎ»Êı
-	long UnitsPrecision;//³õÊ¼Öµ:acDimPrecisionTwo
-	bool SuppressLeadingZeros;//ÒÖÖÆ±ê×¢ÖµµÄÇ°µ¼0//³õÊ¼Öµ:false
-	bool SuppressTrailingZeros;//ÒÖÖÆ±ê×¢ÖµµÄºó×º0//³õÊ¼Öµ:true
-	bool AngleSuppressLeadingZeros;//ÒÖÖÆ±ê×¢ÖµµÄÇ°µ¼0//³õÊ¼Öµ:false
-	bool AngleSuppressTrailingZeros;//ÒÖÖÆ±ê×¢ÖµµÄºó×º0//³õÊ¼Öµ:true
-	long AngleFormat;//È¡Öµ·¶Î§£ºAcAngleUnits//Ö¸¶¨½Ç¶È±ê×¢µÄµ¥Î»¸ñÊ½//³õÊ¼Öµ:acDegrees
-	long AnglePrecision;//Ö¸¶¨½Ç¶È±ê×¢ÎÄ±¾µÄ¾«¶È//³õÊ¼Öµ:acDimPrecisionOne
-	double LinearScaleFactor;//³ı½Ç¶È±ê×¢ÍâËùÓĞ±ê×¢¶ÈÁ¿µÄ±ÈÀıÒò×Ó//³õÊ¼Öµ:1
-};
+		//å°ºå¯¸çº¿
+		long DimensionLineColor;  //åˆå§‹å€¼:acByBlock
+		long DimensionLineWeight; //åˆå§‹å€¼:acLnWtByBlock
+		bool DimLine1Suppress;	  //åˆå§‹å€¼:false
+		bool DimLine2Suppress;	  //åˆå§‹å€¼:false
+		//true: å³ä½¿å½“æ–‡å­—ç»˜åˆ¶åœ¨å°ºå¯¸ç•Œçº¿ä¹‹å¤–ï¼Œä¹Ÿè¦æŠŠå°ºå¯¸çº¿ç½®äºå°ºå¯¸ç•Œçº¿ä¹‹å†…ã€‚
+		//false: å½“æ–‡å­—ç»˜åˆ¶åœ¨å°ºå¯¸ç•Œçº¿ä¹‹å¤–æ—¶ï¼Œä¸å¼ºåˆ¶æŠŠå°ºå¯¸çº¿ç½®äºå°ºå¯¸ç•Œçº¿ä¹‹å†…ã€‚
+		//åˆå§‹å€¼:true
+		bool ForceLineInside;
 
-struct DXF_API PlotSettings
-{
-	PlotSettings();
+		//å°ºå¯¸ç•Œçº¿
+		long ExtensionLineColor;	//åˆå§‹å€¼:acByBlock
+		long ExtensionLineWeight;	//åˆå§‹å€¼:acLnWtByBlock
+		double ExtensionLineExtend; //æŒ‡å®šå°ºå¯¸ç•Œçº¿è¶…å‡ºå°ºå¯¸çº¿çš„é•¿åº¦//åˆå§‹å€¼:0
+		double ExtensionLineOffset; //æŒ‡å®šå°ºå¯¸ç•Œçº¿ä»å°ºå¯¸ç•Œçº¿æ ¹ç‚¹å¤„çš„åç§»//åˆå§‹å€¼:0
+		bool ExtLine1Suppress;		//true--ä¸ç»˜åˆ¶ç¬¬ä¸€æ¡å°ºå¯¸ç•Œçº¿//åˆå§‹å€¼:false
+		bool ExtLine2Suppress;		//true--ä¸ç»˜åˆ¶ç¬¬äºŒæ¡å°ºå¯¸ç•Œçº¿//åˆå§‹å€¼:false
 
-	/*ÏµÍ³´òÓ¡»ú»ò´òÓ¡ÅäÖÃÎÄ¼şµÄÃû³Æ*/
-	std::string m_PlotConfigFile;
+		//ç®­å¤´
+		long ArrowHead1Type;		 //å–å€¼èŒƒå›´ï¼šenum AcDimArrowheadType//åˆå§‹å€¼:acArrowDefault
+		long ArrowHead2Type;		 //å–å€¼èŒƒå›´ï¼šenum AcDimArrowheadType//åˆå§‹å€¼:acArrowDefault
+		std::string ArrowHead1Block; //å½“Arrowhead1Type = acArrowUserDefinedæ—¶èµ·ä½œç”¨
+		std::string ArrowHead2Block; //å½“Arrowhead2Type = acArrowUserDefinedæ—¶èµ·ä½œç”¨
+		double ArrowHeadSize;		 //åˆå§‹å€¼:0.18
+		long CenterType;			 //å–å€¼èŒƒå›´ï¼šenum AcDimCenterType//åˆå§‹å€¼:acCenterMark
+		double CenterMarkSize;		 //åˆå§‹å€¼:0.09
 
-	//Í¼Ö½Ãû³Æ
-	std::string m_PaperName;
+		//æ–‡å­—
+		std::string TextStyle; //å°ºå¯¸æ–‡å­—å’Œå…¬å·®æ–‡å­—çš„æ ·å¼
+		double TextHeight;	   //å½“TextStyleæœ‰å›ºå®šå­—é«˜æ—¶ï¼Œè¿™ä¸ªå±æ€§è¢«å¿½ç•¥ã€‚//åˆå§‹å€¼:0.18
+		long TextColor;		   //åˆå§‹å€¼:acByBlock
+		//å–å€¼èŒƒå›´ï¼šenum AcDimVerticalJustification//åˆå§‹å€¼:acVertCentered
+		long VerticalTextPosition;
+		//å–å€¼èŒƒå›´ï¼šenum AcDimHorizontalJustification//åˆå§‹å€¼:acHorzCentered
+		long HorizontalTextPosition;
+		bool TextAlign; //æŒ‡å®šæ–‡å­—æ–¹å‘ã€‚true--æ°´å¹³,false--ä¸å°ºå¯¸çº¿å¯¹é½//åˆå§‹å€¼:false
+		//å½“ä¸ºäº†å®¹çº³æ ‡æ³¨æ–‡å­—è€Œæ–­å¼€å°ºå¯¸çº¿æ—¶ï¼ŒæŒ‡å®šæ ‡æ³¨æ–‡å­—å’Œå°ºå¯¸çº¿é—´çš„è·ç¦»ã€‚//åˆå§‹å€¼:0.045
+		//å½“æ–‡å­—ä½äºå°ºå¯¸çº¿ä¸Šæ–¹æ—¶ï¼ŒæŒ‡å®šäº†æ ‡æ³¨æ–‡å­—å’Œå°ºå¯¸çº¿é—´çš„è·ç¦»ã€‚
+		double TextGap;
+		//å¦‚æœä¸ºç©ºæˆ–ä¸ºâ€œ<>â€ï¼Œæ ‡æ³¨æµ‹é‡å°†ç»˜åˆ¶ä¸ºæ–‡å­—ï¼›å¦‚æœä¸ºâ€œ â€ï¼ˆä¸€ä¸ªç©ºæ ¼ï¼‰ï¼Œæ–‡å­—å°†è¢«æŠ‘åˆ¶ã€‚
+		//ä¾‹å¦‚"Ğ¤<>mm"ã€‚
+		std::string Text;
+		//è°ƒæ•´
+		//å–å€¼èŒƒå›´ï¼šenum AcDimFitï¼ŒæŒ‡å®šå½“å°ºå¯¸ç•Œçº¿å†…ç©ºé—´ä¸è¶³æ—¶é‡‡å–çš„è°ƒæ•´æªæ–½
+		long Fit; //åˆå§‹å€¼:acBestFit
+		//æŒ‡å®šç§»åŠ¨æ–‡å­—æ—¶å¦‚ä½•è°ƒæ•´å°ºå¯¸çº¿ï¼Œå¯¹ç¨‹åºå‡ºå›¾æ²¡æœ‰å½±å“ï¼Œä½†å½±å“å¯¹æ‰€å‡ºå›¾ç¼–è¾‘ï¼Œåº”é‡‡ç”¨ç¼ºçœå€¼ã€‚
+		//å–å€¼èŒƒå›´ï¼šenum AcDimTextMovement
+		long TextMovement; //åˆå§‹å€¼:acMoveTextNoLeader
+		//true: å¼ºåˆ¶æ ‡æ³¨æ–‡å­—ä½äºå°ºå¯¸ç•Œçº¿å†…ã€‚
+		//false: ä»…å½“æœ‰è¶³å¤Ÿç©ºé—´æ—¶æŠŠæ ‡æ³¨æ–‡å­—ç½®äºå°ºå¯¸ç•Œçº¿å†…ã€‚
+		//ä»…å¯¹çº¿æ€§å’Œè§’åº¦æ ‡æ³¨èµ·ä½œç”¨ï¼Œå¯¹åŠå¾„å’Œç›´å¾„æ ‡æ³¨ä¸èµ·ä½œç”¨ã€‚
+		//åˆå§‹å€¼:false
+		bool TextInside;
 
-	/*Í¼Ö½³ß´ç*/	//in millimeter
-	double m_LeftMargin;
-	double m_BottomMargin;
-	double m_RightMargin;
-	double m_TopMargin;
-	double m_Width;
-	double m_Height;
+		//ä¸»å•ä½
+		//å–å€¼èŒƒå›´ï¼šenum AcDimLUnits,æŒ‡å®šé™¤è§’åº¦å¤–æ‰€æœ‰æ ‡æ³¨çš„å•ä½æ ¼å¼//åˆå§‹å€¼:acDimLDecimal
+		long UnitsFormat;
+		//å–å€¼èŒƒå›´ï¼šenum AcDimPrecision,æŒ‡å®šé™¤è§’åº¦å¤–æ‰€æœ‰æ ‡æ³¨çš„å°æ•°ä½æ•°
+		long UnitsPrecision;			 //åˆå§‹å€¼:acDimPrecisionTwo
+		bool SuppressLeadingZeros;		 //æŠ‘åˆ¶æ ‡æ³¨å€¼çš„å‰å¯¼0//åˆå§‹å€¼:false
+		bool SuppressTrailingZeros;		 //æŠ‘åˆ¶æ ‡æ³¨å€¼çš„åç¼€0//åˆå§‹å€¼:true
+		bool AngleSuppressLeadingZeros;	 //æŠ‘åˆ¶æ ‡æ³¨å€¼çš„å‰å¯¼0//åˆå§‹å€¼:false
+		bool AngleSuppressTrailingZeros; //æŠ‘åˆ¶æ ‡æ³¨å€¼çš„åç¼€0//åˆå§‹å€¼:true
+		long AngleFormat;				 //å–å€¼èŒƒå›´ï¼šAcAngleUnits//æŒ‡å®šè§’åº¦æ ‡æ³¨çš„å•ä½æ ¼å¼//åˆå§‹å€¼:acDegrees
+		long AnglePrecision;			 //æŒ‡å®šè§’åº¦æ ‡æ³¨æ–‡æœ¬çš„ç²¾åº¦//åˆå§‹å€¼:acDimPrecisionOne
+		double LinearScaleFactor;		 //é™¤è§’åº¦æ ‡æ³¨å¤–æ‰€æœ‰æ ‡æ³¨åº¦é‡çš„æ¯”ä¾‹å› å­//åˆå§‹å€¼:1
+	};
 
-	/*! ´òÓ¡Ğı×ª£º
-	0 = ÎŞĞı×ª
-	1 = ÄæÊ±ÕëĞı×ª 90 ¶È
-	2 = µßµ¹
-	3 = Ë³Ê±ÕëĞı×ª 90 ¶È
+	struct DXF_API PlotSettings
+	{
+		PlotSettings();
+
+		/*ç³»ç»Ÿæ‰“å°æœºæˆ–æ‰“å°é…ç½®æ–‡ä»¶çš„åç§°*/
+		std::string m_PlotConfigFile;
+
+		//å›¾çº¸åç§°
+		std::string m_PaperName;
+
+		/*å›¾çº¸å°ºå¯¸*/ //in millimeter
+		double m_LeftMargin;
+		double m_BottomMargin;
+		double m_RightMargin;
+		double m_TopMargin;
+		double m_Width;
+		double m_Height;
+
+		/*! æ‰“å°æ—‹è½¬ï¼š
+	0 = æ— æ—‹è½¬
+	1 = é€†æ—¶é’ˆæ—‹è½¬ 90 åº¦
+	2 = é¢ å€’
+	3 = é¡ºæ—¶é’ˆæ—‹è½¬ 90 åº¦
 	*/
-	int m_PlotRotation;
+		int m_PlotRotation;
 
-	CDblPoint m_PlotOrigin;
-};
+		CDblPoint m_PlotOrigin;
+	};
 
-struct DXF_API EntAttribute
-{
-	EntAttribute();
-	EntAttribute(const EntAttribute&) = default;
-	virtual ~EntAttribute() = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) {};
-	virtual void AssignHandle(/*in, out*/int& handle);
-	void WriteAttribute(DxfWriter& writer, bool bInPaperSpace) const;
+	struct DXF_API EntAttribute
+	{
+		EntAttribute();
+		EntAttribute(const EntAttribute &) = default;
+		virtual ~EntAttribute() = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) {};
+		virtual void AssignHandle(/*in, out*/ int &handle);
+		void WriteAttribute(DxfWriter &writer, bool bInPaperSpace) const;
 
-	mutable int m_Handle; // m_Handle will be assigned value on writing.
-	bool m_IsInPaperspace;
-	AcColor m_Color;
-	AcLineWeight m_Lineweight;
-	double m_LinetypeScale;
-	std::string m_Layer;
-	std::string m_Linetype;
-	std::vector<std::weak_ptr<EntAttribute>> m_Reactors;
-};
+		mutable int m_Handle; // m_Handle will be assigned value on writing.
+		bool m_IsInPaperspace;
+		AcColor m_Color;
+		AcLineWeight m_Lineweight;
+		double m_LinetypeScale;
+		std::string m_Layer;
+		std::string m_Linetype;
+		std::vector<std::weak_ptr<EntAttribute>> m_Reactors;
+	};
 
-class DXF_API EntityList : public std::vector<std::shared_ptr<EntAttribute>>
-{
-public:
-	EntityList() = default;
-	// Because EntityList owns the entities, so it can not be shallow-copied.
-	EntityList(const EntityList& src) = delete;
-	~EntityList() = default;
-	iterator FindEntity(int handle);
-};
+	class DXF_API EntityList : public std::vector<std::shared_ptr<EntAttribute>>
+	{
+	public:
+		EntityList() = default;
+		// Because EntityList owns the entities, so it can not be shallow-copied.
+		EntityList(const EntityList &src) = delete;
+		~EntityList() = default;
+		iterator FindEntity(int handle);
+	};
 
-using VectorOfEntityList = std::vector<std::shared_ptr<EntityList>>;
+	using VectorOfEntityList = std::vector<std::shared_ptr<EntityList>>;
 
-struct DXF_API AcadCircle : public EntAttribute
-{
-	AcadCircle();
-	AcadCircle(const AcadCircle&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
+	struct DXF_API AcadCircle : public EntAttribute
+	{
+		AcadCircle();
+		AcadCircle(const AcadCircle &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-	CDblPoint m_Center;
-	double m_Radius;
-};
+		CDblPoint m_Center;
+		double m_Radius;
+	};
 
-struct DXF_API AcadArc : public AcadCircle
-{
-	AcadArc();
-	AcadArc(const AcadArc&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
+	struct DXF_API AcadArc : public AcadCircle
+	{
+		AcadArc();
+		AcadArc(const AcadArc &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-	double m_StartAngle;//in degrees
-	double m_EndAngle;//in degrees
-};
+		double m_StartAngle; //in degrees
+		double m_EndAngle;	 //in degrees
+	};
 
-struct DXF_API AcadAttDef : public EntAttribute
-{
-	AcadAttDef();
-	AcadAttDef(const AcadAttDef&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
+	struct DXF_API AcadAttDef : public EntAttribute
+	{
+		AcadAttDef();
+		AcadAttDef(const AcadAttDef &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-	// See AcadText for explanation.
-	CDblPoint m_BaseLeftPoint; /*10*/
-	CDblPoint m_InsertionPoint; /*11*/
-	double m_TextHeight; /*40*/
-	std::string m_Text; /*1*/
-	std::string m_Tag; /*2, cannot contain spaces*/
-	AcAttributeMode m_Flags; /*70*/
-	double m_RotationAngle;/*50, in degrees*/
-	std::string m_TextStyle; /*7*/
-	short m_HorAlign; /*72*/
-	short m_VerAlign; /*74*/
-	int m_DuplicateFlag; // 1 = Keep existing
-	std::string m_Prompt; /*3*/
-};
+		// See AcadText for explanation.
+		CDblPoint m_BaseLeftPoint;	/*10*/
+		CDblPoint m_InsertionPoint; /*11*/
+		double m_TextHeight;		/*40*/
+		std::string m_Text;			/*1*/
+		std::string m_Tag;			/*2, cannot contain spaces*/
+		AcAttributeMode m_Flags;	/*70*/
+		double m_RotationAngle;		/*50, in degrees*/
+		std::string m_TextStyle;	/*7*/
+		short m_HorAlign;			/*72*/
+		short m_VerAlign;			/*74*/
+		int m_DuplicateFlag;		// 1 = Keep existing
+		std::string m_Prompt;		/*3*/
+	};
 
-struct DXF_API AcadAttrib : public EntAttribute
-{
-	AcadAttrib();
-	AcadAttrib(const AcadAttrib&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-	void WriteDxf(DxfWriter& writer, bool bInPaperSpace, int parentHandle);
+	struct DXF_API AcadAttrib : public EntAttribute
+	{
+		AcadAttrib();
+		AcadAttrib(const AcadAttrib &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+		void WriteDxf(DxfWriter &writer, bool bInPaperSpace, int parentHandle);
 
-	// See AcadText for explanation.
-	CDblPoint m_BaseLeftPoint; /*10*/
-	CDblPoint m_InsertionPoint; /*11*/
-	double m_TextHeight; /*40*/
-	std::string m_Text; /*1*/
-	std::string m_Tag; /*2, cannot contain spaces*/
-	AcAttributeMode m_Flags; /*70*/
-	double m_RotationAngle;/*50, in degrees*/
-	std::string m_TextStyle; /*7*/
-	short m_HorAlign; /*72*/
-	short m_VerAlign; /*74*/
-	int m_DuplicateFlag; // 1 = Keep existing
-};
+		// See AcadText for explanation.
+		CDblPoint m_BaseLeftPoint;	/*10*/
+		CDblPoint m_InsertionPoint; /*11*/
+		double m_TextHeight;		/*40*/
+		std::string m_Text;			/*1*/
+		std::string m_Tag;			/*2, cannot contain spaces*/
+		AcAttributeMode m_Flags;	/*70*/
+		double m_RotationAngle;		/*50, in degrees*/
+		std::string m_TextStyle;	/*7*/
+		short m_HorAlign;			/*72*/
+		short m_VerAlign;			/*74*/
+		int m_DuplicateFlag;		// 1 = Keep existing
+	};
 
+	struct DXF_API AcadBlockInstance : public EntAttribute
+	{
+		AcadBlockInstance();
+		AcadBlockInstance(const AcadBlockInstance &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+		virtual void AssignHandle(/*in, out*/ int &handle);
 
-struct DXF_API AcadBlockInstance : public EntAttribute
-{
-	AcadBlockInstance();
-	AcadBlockInstance(const AcadBlockInstance&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-	virtual void AssignHandle(/*in, out*/int& handle);
+		std::string m_Name;
+		CDblPoint m_InsertionPoint;
+		double m_Xscale, m_Yscale, m_Zscale;
+		double m_RotationAngle; //in degrees
+		std::vector<AcadAttrib> m_Attribs;
+	};
 
-	std::string m_Name;
-	CDblPoint m_InsertionPoint;
-	double m_Xscale, m_Yscale, m_Zscale;
-	double m_RotationAngle;//in degrees
-	std::vector<AcadAttrib> m_Attribs;
-};
+	struct DXF_API AcadDim : public EntAttribute
+	{
+		AcadDim();
+		AcadDim(const AcadDim &) = default;
+		void WriteHeader(DxfWriter &writer, bool bInPaperSpace);
+		void WriteOverride(DxfWriter &writer);
 
-struct DXF_API AcadDim : public EntAttribute
-{
-	AcadDim();
-	AcadDim(const AcadDim&) = default;
-	void WriteHeader(DxfWriter& writer, bool bInPaperSpace);
-	void WriteOverride(DxfWriter& writer);
+		//å¦‚æœm_BlockNameä¸ºç©ºï¼ŒDxfWriteréœ€è¦ç”Ÿæˆæ ‡æ³¨å›¾å—ï¼Œå¦åˆ™è¯´æ˜æ˜¯ä»DXFæ–‡ä»¶è¯»å–çš„ï¼Œå·²ç»è¯»å…¥æ˜¾ç¤ºæ ‡æ³¨å›¾å—(*D<n>)ã€‚
+		std::string m_BlockName;
+		//å®šä¹‰ç‚¹ï¼ˆåœ¨ WCS ä¸­ï¼‰ï¼Œå®šä¹‰ç‚¹å«ä¹‰ä¸æ ‡æ³¨ç±»å‹ç›¸å…³ã€‚
+		CDblPoint m_DefPoint;
+		//æ ‡æ³¨æ–‡å­—çš„ä¸­ç‚¹ï¼ˆåœ¨ OCS ä¸­ï¼‰
+		// m_ValidMembersFlag[TEXTPOSITION]æŒ‡ç¤ºè¿™ä¸ªå˜é‡æ˜¯å¦æœ‰æ•ˆ
+		CDblPoint m_TextPosition;
+		//å€¼ 0 - 6 æ˜¯è¡¨ç¤ºæ ‡æ³¨ç±»å‹çš„æ•´æ•°å€¼ã€‚å€¼ 32ã€64 å’Œ 128 æ˜¯æ·»åŠ åˆ°æ•´æ•°å€¼ä¸­çš„ä½å€¼ï¼ˆåœ¨ R13 åŠä»¥åçš„ç‰ˆæœ¬ä¸­å§‹ç»ˆè®¾ç½®å€¼ 32ï¼‰
+		int m_DimType;
+		AcAttachmentPoint m_Attachment;
 
-	//Èç¹ûm_BlockNameÎª¿Õ£¬DxfWriterĞèÒªÉú³É±ê×¢Í¼¿é£¬·ñÔòËµÃ÷ÊÇ´ÓDXFÎÄ¼ş¶ÁÈ¡µÄ£¬ÒÑ¾­¶ÁÈëÏÔÊ¾±ê×¢Í¼¿é(*D<n>)¡£
-	std::string m_BlockName;
-	//¶¨Òåµã£¨ÔÚ WCS ÖĞ£©£¬¶¨Òåµãº¬ÒåÓë±ê×¢ÀàĞÍÏà¹Ø¡£
-	CDblPoint m_DefPoint;
-	// Ó¦¸ÃÊ¹ÓÃÖ¸Õë, nullptr±íÊ¾AutoCAD¼ÆËãµÄÎ»ÖÃ, ·ñÔòÊ¹ÓÃÖ¸¶¨µÄÎ»ÖÃ.
-	// µ«ÊÇÎªÁË±ÜÃâ¶ÔÒÑÓĞ´úÂëµÄÓ°Ïì¹ı´ó,¾ÍÕâÃ´½«¾ÍÁË.
-	//±ê×¢ÎÄ×ÖµÄÖĞµã£¨ÔÚ OCS ÖĞ£©
-	CDblPoint m_TextPosition;
-	//Öµ 0 - 6 ÊÇ±íÊ¾±ê×¢ÀàĞÍµÄÕûÊıÖµ¡£Öµ 32¡¢64 ºÍ 128 ÊÇÌí¼Óµ½ÕûÊıÖµÖĞµÄÎ»Öµ£¨ÔÚ R13 ¼°ÒÔºóµÄ°æ±¾ÖĞÊ¼ÖÕÉèÖÃÖµ 32£©
-	int m_DimType;
-	AcAttachmentPoint m_Attachment;
-
-	std::string m_DimStyleName;
-	//ÓÃÀ´Ö¸Ê¾m_DimStyleOverrideÖĞÄ³¸ö³ÉÔ±±äÁ¿(Name³ıÍâ)/m_TextRotationµÄÖµÊÇ·ñÓĞĞ§¡£
-	std::bitset<LASTBIT> m_ValidMembersFlag;
-	//m_DimStyleOverride.NameÃ»ÓĞÊ¹ÓÃ¡£
-	DimStyleData m_DimStyleOverride;
-	//±ê×¢ÎÄ×ÖÓëÆäÄ¬ÈÏ·½ÏòËù³ÉµÄĞı×ª½Ç¶È£¨³ß´çÏß·½Ïò£©£¨¿ÉÑ¡£©
-	double m_TextRotation;//in degrees
+		std::string m_DimStyleName;
+		//ç”¨æ¥æŒ‡ç¤ºm_DimStyleOverrideä¸­æŸä¸ªæˆå‘˜å˜é‡(Nameé™¤å¤–)/m_TextRotation/m_TextPositionçš„å€¼æ˜¯å¦æœ‰æ•ˆã€‚
+		std::bitset<LASTBIT> m_ValidMembersFlag;
+		//m_DimStyleOverride.Nameæ²¡æœ‰ä½¿ç”¨ã€‚
+		DimStyleData m_DimStyleOverride;
+		//æ ‡æ³¨æ–‡å­—ä¸å…¶é»˜è®¤æ–¹å‘æ‰€æˆçš„æ—‹è½¬è§’åº¦ï¼ˆå°ºå¯¸çº¿æ–¹å‘ï¼‰ï¼ˆå¯é€‰ï¼‰
+		// m_ValidMembersFlag[TEXTROTATION]æŒ‡ç¤ºè¿™ä¸ªå˜é‡æ˜¯å¦æœ‰æ•ˆ
+		double m_TextRotation; //in degrees
 
 #pragma region Overrides
-	void OverrideDimensionLineColor(long value);
-	void OverrideDimensionLineWeight(long value);
-	void OverrideDimLine1Suppress(bool value);
-	void OverrideDimLine2Suppress(bool value);
-	void OverrideForceLineInside(bool value);
-	void OverrideExtensionLineColor(long value);
-	void OverrideExtensionLineWeight(long value);
-	void OverrideExtensionLineExtend(double value);
-	void OverrideExtensionLineOffset(double value);
-	void OverrideExtLine1Suppress(bool value);
-	void OverrideExtLine2Suppress(bool value);
-	void OverrideArrowHead1Type(long value);
-	void OverrideArrowHead2Type(long value);
-	void OverrideArrowHead1Block(std::string value);
-	void OverrideArrowHead2Block(std::string value);
-	void OverrideArrowHeadSize(double value);
-	void OverrideCenterType(long value);
-	void OverrideCenterMarkSize(double value);
-	void OverrideTextStyle(std::string value);
-	void OverrideTextHeight(double value);
-	void OverrideTextColor(long value);
-	void OverrideVerticalTextPosition(long value);
-	void OverrideHorizontalTextPosition(long value);
-	void OverrideTextAlign(bool value);
-	void OverrideTextGap(double value);
-	void OverrideText(std::string value);
-	void OverrideFit(long value);
-	void OverrideTextMovement(long value);
-	void OverrideTextInside(bool value);
-	void OverrideUnitsFormat(long value);
-	void OverrideUnitsPrecision(long value);
-	void OverrideSuppressLeadingZeros(bool value);
-	void OverrideSuppressTrailingZeros(bool value);
-	void OverrideAngleSuppressLeadingZeros(bool value);
-	void OverrideAngleSuppressTrailingZeros(bool value);
-	void OverrideAngleFormat(long value);
-	void OverrideAnglePrecision(long value);
-	void OverrideLinearScaleFactor(double value);
-	void OverrideTextRotation(double textRotation);
+		void OverrideDimensionLineColor(long value);
+		void OverrideDimensionLineWeight(long value);
+		void OverrideDimLine1Suppress(bool value);
+		void OverrideDimLine2Suppress(bool value);
+		void OverrideForceLineInside(bool value);
+		void OverrideExtensionLineColor(long value);
+		void OverrideExtensionLineWeight(long value);
+		void OverrideExtensionLineExtend(double value);
+		void OverrideExtensionLineOffset(double value);
+		void OverrideExtLine1Suppress(bool value);
+		void OverrideExtLine2Suppress(bool value);
+		void OverrideArrowHead1Type(long value);
+		void OverrideArrowHead2Type(long value);
+		void OverrideArrowHead1Block(std::string value);
+		void OverrideArrowHead2Block(std::string value);
+		void OverrideArrowHeadSize(double value);
+		void OverrideCenterType(long value);
+		void OverrideCenterMarkSize(double value);
+		void OverrideTextStyle(std::string value);
+		void OverrideTextHeight(double value);
+		void OverrideTextColor(long value);
+		void OverrideVerticalTextPosition(long value);
+		void OverrideHorizontalTextPosition(long value);
+		void OverrideTextAlign(bool value);
+		void OverrideTextGap(double value);
+		void OverrideText(std::string value);
+		void OverrideFit(long value);
+		void OverrideTextMovement(long value);
+		void OverrideTextInside(bool value);
+		void OverrideUnitsFormat(long value);
+		void OverrideUnitsPrecision(long value);
+		void OverrideSuppressLeadingZeros(bool value);
+		void OverrideSuppressTrailingZeros(bool value);
+		void OverrideAngleSuppressLeadingZeros(bool value);
+		void OverrideAngleSuppressTrailingZeros(bool value);
+		void OverrideAngleFormat(long value);
+		void OverrideAnglePrecision(long value);
+		void OverrideLinearScaleFactor(double value);
+		void OverrideTextRotation(double textRotation);
 #pragma endregion
 
 #pragma region Gets
-	long GetDimensionLineColor(const DxfData& graph) const;
-	long GetDimensionLineWeight(const DxfData& graph) const;
-	bool GetDimLine1Suppress(const DxfData& graph) const;
-	bool GetDimLine2Suppress(const DxfData& graph) const;
-	bool GetForceLineInside(const DxfData& graph) const;
-	long GetExtensionLineColor(const DxfData& graph) const;
-	long GetExtensionLineWeight(const DxfData& graph) const;
-	double GetExtensionLineExtend(const DxfData& graph) const;
-	double GetExtensionLineOffset(const DxfData& graph) const;
-	bool GetExtLine1Suppress(const DxfData& graph) const;
-	bool GetExtLine2Suppress(const DxfData& graph) const;
-	long GetArrowHead1Type(const DxfData& graph) const;
-	long GetArrowHead2Type(const DxfData& graph) const;
-	std::string GetArrowHead1Block(const DxfData& graph) const;
-	std::string GetArrowHead2Block(const DxfData& graph) const;
-	double GetArrowHeadSize(const DxfData& graph) const;
-	long GetCenterType(const DxfData& graph) const;
-	double GetCenterMarkSize(const DxfData& graph) const;
-	std::string GetTextStyle(const DxfData& graph) const;
-	double GetTextHeight(const DxfData& graph) const;
-	long GetTextColor(const DxfData& graph) const;
-	long GetVerticalTextPosition(const DxfData& graph) const;
-	long GetHorizontalTextPosition(const DxfData& graph) const;
-	bool GetTextAlign(const DxfData& graph) const;
-	double GetTextGap(const DxfData& graph) const;
-	std::string GetText(const DxfData& graph) const;
-	long GetFit(const DxfData& graph) const;
-	long GetTextMovement(const DxfData& graph) const;
-	bool GetTextInside(const DxfData& graph) const;
-	long GetUnitsFormat(const DxfData& graph) const;
-	long GetUnitsPrecision(const DxfData& graph) const;
-	bool GetSuppressLeadingZeros(const DxfData& graph) const;
-	bool GetSuppressTrailingZeros(const DxfData& graph) const;
-	bool GetAngleSuppressLeadingZeros(const DxfData& graph) const;
-	bool GetAngleSuppressTrailingZeros(const DxfData& graph) const;
-	long GetAngleFormat(const DxfData& graph) const;
-	long GetAnglePrecision(const DxfData& graph) const;
-	double GetLinearScaleFactor(const DxfData& graph) const;
+		long GetDimensionLineColor(const DxfData &graph) const;
+		long GetDimensionLineWeight(const DxfData &graph) const;
+		bool GetDimLine1Suppress(const DxfData &graph) const;
+		bool GetDimLine2Suppress(const DxfData &graph) const;
+		bool GetForceLineInside(const DxfData &graph) const;
+		long GetExtensionLineColor(const DxfData &graph) const;
+		long GetExtensionLineWeight(const DxfData &graph) const;
+		double GetExtensionLineExtend(const DxfData &graph) const;
+		double GetExtensionLineOffset(const DxfData &graph) const;
+		bool GetExtLine1Suppress(const DxfData &graph) const;
+		bool GetExtLine2Suppress(const DxfData &graph) const;
+		long GetArrowHead1Type(const DxfData &graph) const;
+		long GetArrowHead2Type(const DxfData &graph) const;
+		std::string GetArrowHead1Block(const DxfData &graph) const;
+		std::string GetArrowHead2Block(const DxfData &graph) const;
+		double GetArrowHeadSize(const DxfData &graph) const;
+		long GetCenterType(const DxfData &graph) const;
+		double GetCenterMarkSize(const DxfData &graph) const;
+		std::string GetTextStyle(const DxfData &graph) const;
+		double GetTextHeight(const DxfData &graph) const;
+		long GetTextColor(const DxfData &graph) const;
+		long GetVerticalTextPosition(const DxfData &graph) const;
+		long GetHorizontalTextPosition(const DxfData &graph) const;
+		bool GetTextAlign(const DxfData &graph) const;
+		double GetTextGap(const DxfData &graph) const;
+		std::string GetText(const DxfData &graph) const;
+		long GetFit(const DxfData &graph) const;
+		long GetTextMovement(const DxfData &graph) const;
+		bool GetTextInside(const DxfData &graph) const;
+		long GetUnitsFormat(const DxfData &graph) const;
+		long GetUnitsPrecision(const DxfData &graph) const;
+		bool GetSuppressLeadingZeros(const DxfData &graph) const;
+		bool GetSuppressTrailingZeros(const DxfData &graph) const;
+		bool GetAngleSuppressLeadingZeros(const DxfData &graph) const;
+		bool GetAngleSuppressTrailingZeros(const DxfData &graph) const;
+		long GetAngleFormat(const DxfData &graph) const;
+		long GetAnglePrecision(const DxfData &graph) const;
+		double GetLinearScaleFactor(const DxfData &graph) const;
 #pragma endregion
 
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) = 0;
-};
-
-struct AcadDimInternal : public AcadDim
-{
-	AcadDimInternal();
-
-	std::vector<int> m_ReactorHandles;
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override {};
-};
-
-struct DXF_API AcadDimAln : public AcadDim
-{
-	AcadDimAln();
-	AcadDimAln(const AcadDimAln&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_ExtLine1Point, m_ExtLine2Point;
-	double m_RotationAngle;//in degrees
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadDimAng3P : public AcadDim
-{
-	AcadDimAng3P();
-	AcadDimAng3P(const AcadDimAng3P&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_FirstEnd, m_SecondEnd; // the endpoints of the extension lines
-	CDblPoint m_AngleVertex; // the vertex of the angle
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadDimAng : public AcadDim
-{
-	AcadDimAng();
-	AcadDimAng(const AcadDimAng&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_FirstStart, m_FirstEnd; // the first extension line
-	CDblPoint m_SecondStart/*, m_SecondEnd*/; // the second extension line
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadDimDia : public AcadDim
-{
-	AcadDimDia();
-	AcadDimDia(const AcadDimDia&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_ChordPoint/*, m_FarChordPoint*/;
-	double m_LeaderLength;
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadDimRad : public AcadDim
-{
-	AcadDimRad();
-	AcadDimRad(const AcadDimRad&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_ChordPoint/*, m_Center*/;
-	double m_LeaderLength;
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadDimRot : public AcadDimAln
-{
-	AcadDimRot();
-	AcadDimRot(const AcadDimRot&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadDimOrd : public AcadDim
-{
-	AcadDimOrd();
-	AcadDimOrd(const AcadDimOrd&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_OrdPoint, m_LeaderPoint;
-
-public: // Used internally
-	virtual void GenerateBlock(DxfData& graph, const char* blockName) override;
-};
-
-struct DXF_API AcadEllipse : public EntAttribute
-{
-	AcadEllipse();
-	AcadEllipse(const AcadEllipse&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_Center;
-	CDblPoint m_MajorAxisPoint;
-	double m_MinorAxisRatio;
-	double m_StartAngle;//in radians
-	double m_EndAngle;//in radians
-};
-
-enum BoundaryPathFlag { Outer = 0x1, LWPline = 0x2, Export = 0x4, Text = 0x8, OuterMost = 0x10 };
-struct DXF_API AcadHatch : public EntAttribute
-{
-	AcadHatch();
-	AcadHatch(const AcadHatch&) = default;
-
-	enum FillFlag { PatternFill, SolidFill }; // Í¼°¸Ìî³ä, ÊµÌåÌî³ä
-	FillFlag m_FillFlag;
-	AcHatchStyle m_HatchStyle;
-
-	// These fields are only valid when m_FillFlag is PatternFill
-	std::string m_PatternName;
-	AcPatternType m_PatternType;
-	double m_PatternScale;
-	double m_PatternAngle;//in degrees
-	// DXF code 47
-	double m_PixelSize;
-
-	// AcadHatch owns these entities. They are just boundary data, not standalone entities.
-	// When you write DXF, don't operate these 2 variables, use AddEntity method instead.
-	EntityList m_OuterLoop;
-	VectorOfEntityList m_InnerLoops;
-
-	// AcadHatch doesn't own these entities.
-	// When you write DXF, don't operate these 2 variables, use AddAssociatedEntity method instead.
-	std::vector<std::weak_ptr<EntAttribute>> m_OuterAssociatedEntities;
-	std::vector<std::shared_ptr<std::vector<std::weak_ptr<EntAttribute>>>> m_InnerAssociatedEntities;
-
-	BoundaryPathFlag m_OuterFlag;
-	std::vector<BoundaryPathFlag> m_InnerFlags;
-
-	// if loopIndex is -1, add pEnt to outer loop;
-	// if loopIndex >= 0, add pEnt to the specified inner loop;
-	// You can only add one closed AcadLWPLine/AcadCircle into a loop;
-	// Or you can add many AcadLine, AcadArc, AcadEllipseArc, AcadSpline into a loop;
-	// It is client programmer's responsibility to ensure that the loop is closed. 
-	bool AddEntity(const std::shared_ptr<EntAttribute>& pEnt, int loopIndex = -1);
-	// Here, pEnt can be any entities, such as AcadText.
-	bool AddAssociatedEntity(const std::shared_ptr<EntAttribute>& pEnt, int loopIndex = -1);
-	bool HasAssociatedEntity() const;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-private:
-	void WriteLoop(DxfWriter& writer, int loopIndex);
-};
-
-struct DXF_API AcadLeader : public EntAttribute
-{
-	AcadLeader();
-	AcadLeader(const AcadLeader&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	std::string m_StyleName;
-	AcLeaderType m_Type;
-	double m_ArrowSize;
-	bool m_HasBaseLine;
-	bool m_BaseLineDirection;
-	DblPoints m_Vertices;
-	double m_CharHeight, m_TextWidth;
-
-	// It is a AcadMText or AcadBlockInstance, you should add it to the same block with the block  AcadLeader.
-	std::weak_ptr<EntAttribute> m_Annotation;
-};
-
-enum ContentType { BLOCK_TYPE = 1, MTEXT_TYPE = 2 };
-
-struct DXF_API StyleContent
-{
-	virtual ~StyleContent() = 0 {}
-	virtual void WriteDxf(DxfWriter& writer) = 0;
-	virtual ContentType GetContentType() const = 0;
-};
-
-struct DXF_API StyleMTextPart : StyleContent
-{
-	StyleMTextPart();
-	StyleMTextPart(const StyleMTextPart&) = default;
-	virtual void WriteDxf(DxfWriter& writer) override;
-	virtual ContentType GetContentType() const override;
-	std::string m_TextStyle; /*342*/
-	AcTextAngleType m_TextAngleType; /*175*/
-	AcColor m_TextColor; /*93*/
-	double m_TextHeight; /* 45*/
-	double m_AlignSpace; /*46*/
-};
-
-struct DXF_API StyleBlockPart : StyleContent
-{
-	StyleBlockPart();
-	StyleBlockPart(const StyleBlockPart&) = default;
-	virtual void WriteDxf(DxfWriter& writer) override;
-	virtual ContentType GetContentType() const override;
-	std::string  m_BlockName; /*343*/
-	AcBlockConnectionType m_BlockConnectionType; /*177, Center Extens, Insertion point*/
-	AcColor m_BlockColor; /*94*/
-	CDblPoint m_BlockScale; /*47, 49*/
-};
-
-struct DXF_API MLeaderStyle /*in OBJECTS section*/
-{
-	MLeaderStyle();
-	MLeaderStyle(const MLeaderStyle&) = default;
-	void WriteDxf(DxfWriter& writer, const std::string& name, int handle);
-	AcMLeaderType m_LeaderType; /*173*/
-	AcColor m_LineColor; /*91*/
-	std::string m_LineType; /*340*/
-	AcLineWeight m_LineWeight; /*92*/
-	std::string m_ArrowHead; /*341, arrow block, can be empty*/
-	double m_ArrowSize; /*44*/
-
-	int m_MaxLeaderPoints; /*90*/
-	double m_FirstSegAngleConstraint; /*40*/
-	double m_SecondSegAngleConstraint; /*41*/
-	bool m_EnableLanding; /*290*/
-	bool m_EnableDogleg; /*291*/
-	bool m_IsAnnotative; /*296*/
-	double m_LandingGap; /*42*/
-
-	double m_DoglegLength; /*43*/
-	double m_BreakGapSize; /*143*/
-
-	// ContentType m_ContentType; /*170*/
-	std::shared_ptr<StyleContent> m_Content;
-};
-
-struct DXF_API LeaderLine
-{
-	DblPoints m_Points; /*10*/
-};
-
-struct DXF_API LeaderPart
-{
-	LeaderPart();
-	LeaderPart(const LeaderPart&) = default;
-	void WriteDxf(DxfWriter& writer);
-	CDblPoint m_CommonPoint; /*10*/
-	std::vector<LeaderLine> m_Lines;
-	double m_DoglegLength; /*40, required*/
-};
-
-struct DXF_API Content
-{
-	virtual void WriteDxf(DxfWriter& writer) = 0;
-	virtual ContentType GetContentType() const = 0;
-	virtual ~Content() = 0 {}
-};
-
-struct DXF_API MTextPart : Content
-{
-	MTextPart();
-	MTextPart(const MTextPart&) = default;
-	virtual void WriteDxf(DxfWriter& writer) override;
-	virtual ContentType GetContentType() const override;
-	std::string m_Text; /* 304, no default value, use \P as new line. such as hello\Pworld*/
-	double m_TextWidth; /*43, no default value*/
-	std::string m_TextStyle; /*340*/
-	AcColor m_TextColor; /*90*/
-	CDblPoint m_TextLocation; /*12, no default value*/
-	double m_TextRotation; /*42, in radians, 13 = cos, 23 = sin*/
-	AcAttachmentPoint m_AttachmentPoint;; /*171*/
-};
-
-struct DXF_API BlockPart : Content
-{
-	BlockPart();
-	BlockPart(const BlockPart&) = default;
-	virtual void WriteDxf(DxfWriter& writer) override;
-	virtual ContentType GetContentType() const override;
-	std::string  m_BlockName; /*341, no default value*/
-	AcColor m_BlockColor; /*93*/
-	CDblPoint m_BlockPosition; /*15, no default value, sixteen 47 for 4x4 matrix is derived from this*/
-	CDblPoint m_BlockScale; /*16*/
-	double m_BlockRotation; /*46, in radians, 13 = cos, 23 = sin*/
-};
-
-struct DXF_API CONTEXT_DATA
-{
-	CONTEXT_DATA();
-	CONTEXT_DATA(const CONTEXT_DATA&) = default;
-	void WriteDxf(DxfWriter& writer);
-	CDblPoint m_LandingPosition; /* 10, no default value*/
-	double m_TextHeight; /* 41*/
-	double m_ArrowSize; /* 140*/
-	double m_LandingGap; /* 145*/
-	/* 290 hasMText, 296 hasBlock*/
-	std::shared_ptr<Content> m_Content;
-	/*110, Mleader Plane Origin Point is first leader arrow point*/
-	LeaderPart m_Leader;
-};
-
-// http://help.autodesk.com/view/ACD/2016/ENU/?guid=GUID-72D20B8C-0F5E-4993-BEB7-0FCF94F32BE0
-// http://docs.autodesk.com/ACD/2010/ENU/AutoCAD%202010%20User%20Documentation/index.html?url=WS73099cc142f487551d92abb10dc573c45d-7bf1.htm,topicNumber=d0e117972
-// A multileader object typically consists of an arrowhead, a horizontal landing, a leader line or curve, and either a multiline text object or a block.
-struct DXF_API AcadMLeader : public EntAttribute
-{
-	AcadMLeader();
-	AcadMLeader(const AcadMLeader&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CONTEXT_DATA m_ContextData;
-	std::string m_LeaderStyle; /*340*/
-	AcMLeaderType m_LeaderType; /*170*/
-	std::string m_LineType; /*341*/
-	AcLineWeight m_LineWeight; /*171*/
-	bool m_EnableLanding; /*290*/
-	bool m_EnableDogleg; /*291*/
-	//double m_DoglegLength; /*41, this is ignored by ACAD, only LEADER::m_DoglegLength matters*/
-	//double m_ArrowSize; /*42, this is ignored by ACAD, only CONTEXT_DATA::m_ArrowSize matters*/
-	// ContentType m_ContentType; /*172*/
-	//std::string m_TextStyle; /*343, this is ignored by ACAD, only MTEXT::m_TextStyle matters*/
-	std::vector<std::shared_ptr<AcadAttDef>> m_AttrDefs; /*330*/
-	//Text string value for an attribute definition, repeated once per attribute definition and applicable only for a block - type cell
-	std::vector<std::string> m_AttrValues;/*302, ""*/
-};
-
-enum CellType { TEXT_CELL = 1, BLOCK_CELL = 2 };
-
-struct DXF_API CellInTableStyle // Not CELLSTYLE, CELLSTYLE isn't implemented now
-{
-	CellInTableStyle();
-	CellInTableStyle(const CellInTableStyle&) = default;
-	void WriteDxf(DxfWriter& writer);
-
-	double m_TextHeight; /*140, 0.18*/
-	AcCellAlignment m_Alignment; /*170, acMiddleCenter*/
-	AcColor m_TextColor; /*62, acByBlock*/
-	AcColor m_BgColor; /*63, acWhite*/
-	bool m_BgColorEnabled; /*283, false*/
-	AcValueDataType m_CellDataType; /*90, acGeneral*/
-	AcValueUnitType m_CellUnitType; /*91, acUnitless*/
-									/*1, "", ???*/
-	AcLineWeight m_BorderLineWeight[6]; /*274-279, acLnWtByBlock*/
-	bool m_BorderVisible[6]; /*284-289, true*/
-	AcColor m_BorderColor[6]; /*64-69, acByBlock*/
-};
-
-//http://docs.autodesk.com/ACD/2014/CSY/index.html?url=files/GUID-0DBCA057-9F6C-4DEB-A66F-8A9B3C62FB1A.htm,topicNumber=d30e702776
-struct DXF_API TableStyle /*in OBJECTS section*/
-{
-	TableStyle();
-	TableStyle(const TableStyle&) = default;
-	void WriteDxf(DxfWriter& writer, const std::string& name, int handle);
-
-	double m_HorCellMargin; /*40, 0.06*/
-	double m_VerCellMargin; /*41, 0.06*/
-	bool m_HasNoTitle; /*280, false*/
-	bool m_HasNoColumnHeading; /*281, false*/
-	std::string m_TextStyle; /*7, "Standard*/
-
-	// Don't understand why there are many CellInTableStyle(s)
-	std::vector<CellInTableStyle> m_Cells;
-};
-
-struct CellContent
-{
-	virtual ~CellContent() = 0 {}
-	virtual void WriteDxf(DxfWriter& writer) = 0;
-	virtual CellType GetContentType() const = 0;
-};
-
-struct DXF_API CellText : public CellContent
-{
-	CellText();
-	CellText(const CellText&) = default;
-	virtual void WriteDxf(DxfWriter& writer) override;
-	virtual CellType GetContentType() const override;
-
-	std::string m_Text;/*many 2 and one 1, such as {\fSimSun|b0|i0|c134|p2;ÍõÎå}*/
-					   /*many 303 and one 302, same as 2 and 1*/
-	std::string m_TextStyle; /*7, ""*/
-};
-
-struct DXF_API CellBlock : public CellContent
-{
-	CellBlock();
-	CellBlock(const CellBlock&) = default;
-	virtual void WriteDxf(DxfWriter& writer) override;
-	virtual CellType GetContentType() const override;
-
-	std::string m_BlockName; /*340*/
-	double m_BlockScale; /*144*/
-	/*179, number of attribute definitions in the block*/
-	std::vector<std::shared_ptr<AcadAttDef>> m_AttrDefs; /*331*/
-	//Text string value for an attribute definition, repeated once per attribute definition and applicable only for a block - type cell
-	std::vector<std::string> m_AttrValues;/*300, ""*/
-};
-
-struct DXF_API Cell
-{
-	Cell(CellType);
-	Cell(const Cell&) = default;
-	void WriteDxf(DxfWriter& writer);
-
-	//Type m_Type; /*171*/
-	int m_Flag; /*172, 0*/
-	bool m_Merged; /*173, false*/
-	bool m_AutoFit; /*174, false*/
-	// These 2 fields is applicable for merging cells 
-	int m_ColSpan; /*175*/
-	int m_RowSpan; /*176*/
-	int m_OverrideFlag1; /*91, 0*/ /*or values in AcCellProperty*/
-	// A virtual edge is used when a grid line is shared by two cells.For example, if a table contains one row and two columns and it contains cell A and cell B, the central grid line contains the right edge of cell A and the left edge of cell B.One edge is real, and the other edge is virtual.The virtual edge points to the real edge; both edges have the same set of properties, including color, lineweight, and visibility.
-	int m_VirtualEdgeFlag; /*178, 0*/
-	double m_Rotation; /*145, 0.0, in radians, applicable for TEXT and BLOCK*/
-	AcCellAlignment m_Alignment; /*170, 0*/
-	AcColor m_BgColor; /*63*/
-	AcColor m_TextColor; /*64*/
-	bool m_BgColorEnabled; /*283, false*/
-	double m_TextHeight; /*140, 0.0*/
-	// 92, 0, Extended cell flags
-
-	/*301, CELL_VALUE*/
-	int m_Flag93;/*93, 6, ???*/
-	int m_Flag90;/*90, 4, ???*/
-	int m_OverrideFlag2;/*91, 0, ???*/
-	std::shared_ptr<CellContent> m_Content;
-	bool m_LeftBorderVisible; /*288, true*/
-	bool m_RightBorderVisible; /*285, true*/
-	bool m_TopBorderVisible; /*289, true*/
-	bool m_BottomBorderVisible; /*286, true*/
-	/*304, ACVALUE_END*/
-};
-
-//http://help.autodesk.com/view/ACD/2016/ENU/?guid=GUID-D8CCD2F0-18A3-42BB-A64D-539114A07DA0
-struct DXF_API AcadTable : public EntAttribute
-{
-	AcadTable();
-	AcadTable(const AcadTable&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	// These are convinient functions to construct a table object.
-	void InitializeCells(int rowCount, int colCount, CellType ct);
-	void SetRowHeight(double height);
-	void SetColWidth(double width);
-	// It is programmer's responsibilty to ensure merged cells are not overlapped.
-	void MergeCells(int row, int col, int rowSpan, int colSpan);
-	Cell& GetCell(int row, int col);
-	CellText& GetCellText(int row, int col);
-	CellBlock& GetCellBlock(int row, int col);
-
-	/*??? 160, 3512*/
-	/*100, AcDbBlockReference*/
-	std::string m_TableBlockName;/*2, optional anonymous block begins with a *T value to render the whole table*/
-	CDblPoint m_InsertionPoint; /*10*/
-	/*100, AcDbTable*/
-	/*280, 0, 2010*/
-	std::string m_TableStyle; /*342*/
-	/*343, *T Block handle*/
-	/*11, 1.0, 0.0, Horizontal direction vector*/
-	/*90, 22, Flag for table value (unsigned integer)*/
-	int m_RowCount; /*91*/
-	int m_ColCount; /*92*/
-	/*93, 0, Flag for an override*/
-	/*94, 0, Flag for an override of border color*/
-	/*95, 0, Flag for an override of border lineweight*/
-	/*96, 0, Flag for an override of border visibility*/
-	std::vector<double> m_RowHeights; /*141*/
-	std::vector<double> m_ColWidths; /*142*/
-	// There must be m_RowCount * m_ColCount Cell(s), for merged cells which m_Merged is true.*/
-	std::vector<Cell> m_Cells;
-	double m_HorCellMargin; /*40, 0.0*/
-	double m_VerCellMargin; /*41, 0.0*/
-	bool m_LeftBorderVisible; /*288, true*/
-	bool m_RightBorderVisible; /*285, true*/
-	bool m_TopBorderVisible; /*289, true*/
-	bool m_BottomBorderVisible; /*286, true*/
-};
-
-struct DXF_API AcadLine : public EntAttribute
-{
-	AcadLine();
-	AcadLine(const AcadLine&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_StartPoint;
-	CDblPoint m_EndPoint;
-};
-
-struct DXF_API AcadLWPLine : public EntAttribute
-{
-	AcadLWPLine();
-	AcadLWPLine(const AcadLWPLine&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	DblPoints m_Vertices;
-	bool m_Closed;
-
-	void SetConstWidth(double width)
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) = 0;
+	};
+
+	struct AcadDimInternal : public AcadDim
 	{
-		m_Width = width;
-	}
-	double GetConstWdith() { return m_Width; }
-    bool IsConstWidth()
-    {
-        return m_startWidths.empty();
-    }
+		AcadDimInternal();
 
-    void SetWidth(size_t Index, double startWidth, double endWidth);
-    void SetStartWidth(size_t Index, double startWidth);
-    void SetEndWidth(size_t Index, double endWidth);
-    void SetWidths(const std::vector<double>& startWidths, const std::vector<double>& endWidths);
-    const std::vector<double>& startWidths() { return m_startWidths; }
-    const std::vector<double>& endWidths() { return m_endWidths; }
+		std::vector<int> m_ReactorHandles;
 
-	void SetBulge(size_t Index, double Bulge);
-	void PushBulge(double bulge);
-	double GetBulge(size_t Index) const;
-	void SetBulges(std::vector<double> bulges);
-	bool HasBulges() const { return !m_Bulges.empty(); }
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override {};
+	};
 
-private:
-	double m_Width;
-	std::vector<double> m_Bulges;
-    std::vector<double> m_startWidths;
-    std::vector<double> m_endWidths;
-};
-
-struct DXF_API AcadMText : public EntAttribute
-{
-	AcadMText();
-	AcadMText(const AcadMText&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_InsertionPoint;//¶ÔÆëµãµÄ×ø±ê
-	double m_Width;
-	double m_CharHeight;//ÖµÎª0.0Ê±±íÊ¾Ê¹ÓÃÎÄ×ÖÑùÊ½ÖĞµÄ¸ß¶È
-	std::string m_Text;// such as hello\Pworld, \P stands for new line.
-	double m_LineSpacingFactor;//ĞĞ¾àÏµÊıÎª£°Ê±±íÊ¾Ê¹ÓÃÖÁÉÙĞĞ¾à·ç¸ñacLineSpacingStyleAtLeast
-	double m_RotationAngle;//in degrees
-	AcAttachmentPoint m_AttachmentPoint;
-	AcDrawingDirection m_DrawingDirection;
-	std::string m_StyleName;
-};
-
-struct DXF_API AcadPoint : public EntAttribute
-{
-	AcadPoint();
-	AcadPoint(const AcadPoint&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_Point;
-};
-
-struct DXF_API AcadSolid : public EntAttribute
-{
-	AcadSolid();
-	AcadSolid(const AcadSolid&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	CDblPoint m_Point1, m_Point2, m_Point3, m_Point4;
-};
-
-struct DXF_API AcadSpline : public EntAttribute
-{
-	AcadSpline();
-	AcadSpline(const AcadSpline&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
-
-	//ÑùÌõÇúÏß±êÖ¾£¨°´Î»±àÂë£©£º
-	//	1 = ±ÕºÏÑùÌõÇúÏß
-	//	2 = ÖÜÆÚĞÔÑùÌõÇúÏß
-	//	4 = ÓĞÀíÑùÌõÇúÏß
-	//	8 = Æ½Ãæ
-	//	16 = ÏßĞÔ£¨Í¬Ê±»¹ÉèÖÃÆ½ÃæÎ»£©
-	int m_Flag;
-	int m_Degree;
-	CDblPoint m_StartTangent;
-	CDblPoint m_EndTangent;
-	std::vector<double> m_Knots;
-	std::vector<double> m_Weights;
-	std::vector<CDblPoint> m_ControlPoints;
-	std::vector<CDblPoint> m_FitPoints;
-};
-
-struct DXF_API AcadText : public EntAttribute
-{
-	AcadText();
-	AcadText(const AcadText&) = default;
-	void SetObliqueAngle(double a)
+	struct DXF_API AcadDimAln : public AcadDim
 	{
-		m_ObliqueAngle = a;
-		m_IsObliqueAngleValid = true;
-	}
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
+		AcadDimAln();
+		AcadDimAln(const AcadDimAln &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-	// m_BaseLeftPoint¿ÉÒÔ´Óm_InsertionPoint, m_HorAlign, m_VerAlignµÈĞÅÏ¢¼ÆËã³ö¡£
-	CDblPoint m_BaseLeftPoint;//ÎÄ×Ö×óÏÂ½Çµã
-	CDblPoint m_InsertionPoint;//ÊÇÎÄ×Ö¶ÔÆëµã£¬¶ø·ÇÎÄ×Ö×óÏÂ½Çµã
-	std::string m_Text;
-	double m_RotationAngle;//in degrees
-	//ÎÄ×ÖË®Æ½¶ÔÕıÀàĞÍ£¨¿ÉÑ¡£»Ä¬ÈÏÖµ = 0£©ÕûÊı´úÂë£¨·Ç°´Î»±àÂë£©
-	//	0 = ×ó¶ÔÕı£»1 = ¾ÓÖĞ¶ÔÕı£»2 = ÓÒ¶ÔÕı
-	//	3 = ¶ÔÆë£¨Èç¹û´¹Ö±¶ÔÆë = 0£©
-	//	4 = ÖĞ¼ä£¨Èç¹û´¹Ö±¶ÔÆë = 0£©
-	//	5 = Á½¶Ë¶ÔÆë£¨Èç¹û´¹Ö±¶ÔÆë = 0£©
-	short m_HorAlign;
-	//ÎÄ×Ö´¹Ö±¶ÔÕıÀàĞÍ£¨¿ÉÑ¡£»Ä¬ÈÏÖµ = 0£©ÕûÊı´úÂë£¨²»ÊÇ°´Î»±àÂë£©
-	//	0 = »ùÏß¶ÔÕı£»1 = µ×¶Ë¶ÔÕı£»2 = ¾ÓÖĞ¶ÔÕı£»3 = ¶¥¶Ë¶ÔÕı
-	short m_VerAlign;
-	//VerAlign		HorAlign
-	//				0		1		2		3		4		5
-	//0-»ùÏß¶ÔÕı		×ó		ÖĞ		ÓÒ		¶ÔÆë		ÖĞ¼ä		Á½¶Ë¶ÔÆë
-	//1-µ×¶Ë¶ÔÕı		×óÏÂ		ÖĞÏÂ		ÓÒÏÂ
-	//2-¾ÓÖĞ¶ÔÕı		×óÖĞ		ÕıÖĞ		ÓÒÖĞ
-	//3-¶¥¶Ë¶ÔÕı		×óÉÏ		ÖĞÉÏ		ÓÒÉÏ
+		CDblPoint m_ExtLine1Point, m_ExtLine2Point;
+		double m_RotationAngle; //in degrees
 
-	std::string m_StyleName;
-	double m_Height;//ÖµÎª0.0Ê±±íÊ¾Ê¹ÓÃÎÄ×ÖÑùÊ½ÖĞµÄ¸ß¶È
-	double m_WidthFactor;//ÖµÎª0.0Ê±±íÊ¾Ê¹ÓÃÎÄ×ÖÑùÊ½ÖĞµÄ¿í¶ÈÏµÊı
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
 
-private:
-	bool m_IsObliqueAngleValid;//ÖµÎªfalseÊ±±íÊ¾Ê¹ÓÃÎÄ×ÖÑùÊ½ÖĞµÄÎÄ×ÖÇã½Ç
-	double m_ObliqueAngle;//in degrees
-};
+	struct DXF_API AcadDimAng3P : public AcadDim
+	{
+		AcadDimAng3P();
+		AcadDimAng3P(const AcadDimAng3P &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-struct DXF_API AcadViewport : public EntAttribute
-{
-	AcadViewport();
-	AcadViewport(const AcadViewport&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
+		CDblPoint m_FirstEnd, m_SecondEnd; // the endpoints of the extension lines
+		CDblPoint m_AngleVertex;		   // the vertex of the angle
 
-	CDblPoint m_PaperspaceCenter;
-	double m_PaperspaceWidth;
-	double m_PaperspaceHeight;
-	CDblPoint m_ModelSpaceCenter;
-	double m_ModelSpaceHeight;
-	double m_TwistAngle;//in degrees
-    bool m_locked;
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
 
-	// if m_ClipEnt is valid, viewport will be clipped by an entity, usually a polygon.
-	std::weak_ptr<EntAttribute> m_ClipEnt;
-};
+	struct DXF_API AcadDimAng : public AcadDim
+	{
+		AcadDimAng();
+		AcadDimAng(const AcadDimAng &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-struct DXF_API AcadXLine : public EntAttribute
-{
-	AcadXLine();
-	AcadXLine(const AcadXLine&) = default;
-	virtual void WriteDxf(DxfWriter& writer, bool bInPaperSpace) override;
+		CDblPoint m_FirstStart, m_FirstEnd;		   // the first extension line
+		CDblPoint m_SecondStart /*, m_SecondEnd*/; // the second extension line
 
-	CDblPoint m_First;
-	CDblPoint m_Second;
-};
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
 
-struct DXF_API LayoutData
-{
-	LayoutData();
-	void WriteDxf(DxfWriter& writer);
-    // convenient functions to add polygonal AcadViewport
-    void AddPolygonalViewport(const DblPoints & polygonPS, const CDblPoint & centerMS, double heighMS, double twistAngle/*degrees*/);
-    void AddPolygonalViewportByWidth(const DblPoints & polygonMS, const CDblPoint & centerPS, double widthPS, double twistAngle/*degrees*/);
-    void AddPolygonalViewportByScale(const DblPoints & polygonMS, const CDblPoint & centerPS, double scale, double twistAngle/*degrees*/);
+	struct DXF_API AcadDimDia : public AcadDim
+	{
+		AcadDimDia();
+		AcadDimDia(const AcadDimDia &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-	// Must be *Paper_Space, *Paper_Space0, *Paper_Space1, ...
-	// Don't set it if you create DxfData manually. DxfWriter will set it.
-	std::string m_BlockName;
-	PlotSettings m_PlotSettings;
-	// m_MinLim and m_MaxLim defines the limits in paperspace.
-	CDblPoint m_MinLim; // in millimeters
-	CDblPoint m_MaxLim; // in millimeters
-	// m_MinExt and m_MaxExt defines the default viewport size in paperspace.
-	CDblPoint m_MinExt; // in millimeters
-	CDblPoint m_MaxExt; // in millimeters
-	// Line, arc, dims, ... and AcadViewport objects
-	EntityList m_Objects;
-	// Don't set it if you create DxfData manually. DxfWriter will set it.
-	int m_LayoutOrder;
-};
+		CDblPoint m_ChordPoint /*, m_FarChordPoint*/;
+		double m_LeaderLength;
 
-struct DXF_API BlockDef
-{
-	BlockDef() = default;
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
 
-	CDblPoint m_InsertPoint;
-	EntityList m_Objects;
-};
+	struct DXF_API AcadDimRad : public AcadDim
+	{
+		AcadDimRad();
+		AcadDimRad(const AcadDimRad &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
 
-}
+		CDblPoint m_ChordPoint /*, m_Center*/;
+		double m_LeaderLength;
+
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
+
+	struct DXF_API AcadDimRot : public AcadDimAln
+	{
+		AcadDimRot();
+		AcadDimRot(const AcadDimRot &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
+
+	struct DXF_API AcadDimOrd : public AcadDim
+	{
+		AcadDimOrd();
+		AcadDimOrd(const AcadDimOrd &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_OrdPoint, m_LeaderPoint;
+
+	public: // Used internally
+		virtual void GenerateBlock(DxfData &graph, const char *blockName) override;
+	};
+
+	struct DXF_API AcadEllipse : public EntAttribute
+	{
+		AcadEllipse();
+		AcadEllipse(const AcadEllipse &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_Center;
+		CDblPoint m_MajorAxisPoint;
+		double m_MinorAxisRatio;
+		double m_StartAngle; //in radians
+		double m_EndAngle;	 //in radians
+	};
+
+	enum BoundaryPathFlag
+	{
+		Outer = 0x1,
+		LWPline = 0x2,
+		Export = 0x4,
+		Text = 0x8,
+		OuterMost = 0x10
+	};
+	struct DXF_API AcadHatch : public EntAttribute
+	{
+		AcadHatch();
+		AcadHatch(const AcadHatch &) = default;
+
+		enum FillFlag
+		{
+			PatternFill,
+			SolidFill
+		}; // å›¾æ¡ˆå¡«å……, å®ä½“å¡«å……
+		FillFlag m_FillFlag;
+		AcHatchStyle m_HatchStyle;
+
+		// These fields are only valid when m_FillFlag is PatternFill
+		std::string m_PatternName;
+		AcPatternType m_PatternType;
+		double m_PatternScale;
+		double m_PatternAngle; //in degrees
+		// DXF code 47
+		double m_PixelSize;
+
+		// AcadHatch owns these entities. They are just boundary data, not standalone entities.
+		// When you write DXF, don't operate these 2 variables, use AddEntity method instead.
+		EntityList m_OuterLoop;
+		VectorOfEntityList m_InnerLoops;
+
+		// AcadHatch doesn't own these entities.
+		// When you write DXF, don't operate these 2 variables, use AddAssociatedEntity method instead.
+		std::vector<std::weak_ptr<EntAttribute>> m_OuterAssociatedEntities;
+		std::vector<std::shared_ptr<std::vector<std::weak_ptr<EntAttribute>>>> m_InnerAssociatedEntities;
+
+		BoundaryPathFlag m_OuterFlag;
+		std::vector<BoundaryPathFlag> m_InnerFlags;
+
+		// if loopIndex is -1, add pEnt to outer loop;
+		// if loopIndex >= 0, add pEnt to the specified inner loop;
+		// You can only add one closed AcadLWPLine/AcadCircle into a loop;
+		// Or you can add many AcadLine, AcadArc, AcadEllipseArc, AcadSpline into a loop;
+		// It is client programmer's responsibility to ensure that the loop is closed.
+		bool AddEntity(const std::shared_ptr<EntAttribute> &pEnt, int loopIndex = -1);
+		// Here, pEnt can be any entities, such as AcadText.
+		bool AddAssociatedEntity(const std::shared_ptr<EntAttribute> &pEnt, int loopIndex = -1);
+		bool HasAssociatedEntity() const;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+	private:
+		void WriteLoop(DxfWriter &writer, int loopIndex);
+	};
+
+	struct DXF_API AcadLeader : public EntAttribute
+	{
+		AcadLeader();
+		AcadLeader(const AcadLeader &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		std::string m_StyleName;
+		AcLeaderType m_Type;
+		double m_ArrowSize;
+		bool m_HasBaseLine;
+		bool m_BaseLineDirection;
+		DblPoints m_Vertices;
+		double m_CharHeight, m_TextWidth;
+
+		// It is a AcadMText or AcadBlockInstance, you should add it to the same block with the block  AcadLeader.
+		std::weak_ptr<EntAttribute> m_Annotation;
+	};
+
+	enum ContentType
+	{
+		BLOCK_TYPE = 1,
+		MTEXT_TYPE = 2
+	};
+
+	struct DXF_API StyleContent
+	{
+		virtual ~StyleContent() = 0 {}
+		virtual void WriteDxf(DxfWriter &writer) = 0;
+		virtual ContentType GetContentType() const = 0;
+	};
+
+	struct DXF_API StyleMTextPart : StyleContent
+	{
+		StyleMTextPart();
+		StyleMTextPart(const StyleMTextPart &) = default;
+		virtual void WriteDxf(DxfWriter &writer) override;
+		virtual ContentType GetContentType() const override;
+		std::string m_TextStyle;		 /*342*/
+		AcTextAngleType m_TextAngleType; /*175*/
+		AcColor m_TextColor;			 /*93*/
+		double m_TextHeight;			 /* 45*/
+		double m_AlignSpace;			 /*46*/
+	};
+
+	struct DXF_API StyleBlockPart : StyleContent
+	{
+		StyleBlockPart();
+		StyleBlockPart(const StyleBlockPart &) = default;
+		virtual void WriteDxf(DxfWriter &writer) override;
+		virtual ContentType GetContentType() const override;
+		std::string m_BlockName;					 /*343*/
+		AcBlockConnectionType m_BlockConnectionType; /*177, Center Extens, Insertion point*/
+		AcColor m_BlockColor;						 /*94*/
+		CDblPoint m_BlockScale;						 /*47, 49*/
+	};
+
+	struct DXF_API MLeaderStyle /*in OBJECTS section*/
+	{
+		MLeaderStyle();
+		MLeaderStyle(const MLeaderStyle &) = default;
+		void WriteDxf(DxfWriter &writer, const std::string &name, int handle);
+		AcMLeaderType m_LeaderType; /*173*/
+		AcColor m_LineColor;		/*91*/
+		std::string m_LineType;		/*340*/
+		AcLineWeight m_LineWeight;	/*92*/
+		std::string m_ArrowHead;	/*341, arrow block, can be empty*/
+		double m_ArrowSize;			/*44*/
+
+		int m_MaxLeaderPoints;			   /*90*/
+		double m_FirstSegAngleConstraint;  /*40*/
+		double m_SecondSegAngleConstraint; /*41*/
+		bool m_EnableLanding;			   /*290*/
+		bool m_EnableDogleg;			   /*291*/
+		bool m_IsAnnotative;			   /*296*/
+		double m_LandingGap;			   /*42*/
+
+		double m_DoglegLength; /*43*/
+		double m_BreakGapSize; /*143*/
+
+		// ContentType m_ContentType; /*170*/
+		std::shared_ptr<StyleContent> m_Content;
+	};
+
+	struct DXF_API LeaderLine
+	{
+		DblPoints m_Points; /*10*/
+	};
+
+	struct DXF_API LeaderPart
+	{
+		LeaderPart();
+		LeaderPart(const LeaderPart &) = default;
+		void WriteDxf(DxfWriter &writer);
+		CDblPoint m_CommonPoint; /*10*/
+		std::vector<LeaderLine> m_Lines;
+		double m_DoglegLength; /*40, required*/
+	};
+
+	struct DXF_API Content
+	{
+		virtual void WriteDxf(DxfWriter &writer) = 0;
+		virtual ContentType GetContentType() const = 0;
+		virtual ~Content() = 0 {}
+	};
+
+	struct DXF_API MTextPart : Content
+	{
+		MTextPart();
+		MTextPart(const MTextPart &) = default;
+		virtual void WriteDxf(DxfWriter &writer) override;
+		virtual ContentType GetContentType() const override;
+		std::string m_Text;		  /* 304, no default value, use \P as new line. such as hello\Pworld*/
+		double m_TextWidth;		  /*43, no default value*/
+		std::string m_TextStyle;  /*340*/
+		AcColor m_TextColor;	  /*90*/
+		CDblPoint m_TextLocation; /*12, no default value*/
+		double m_TextRotation;	  /*42, in radians, 13 = cos, 23 = sin*/
+		AcAttachmentPoint m_AttachmentPoint; /*171*/
+	};
+
+	struct DXF_API BlockPart : Content
+	{
+		BlockPart();
+		BlockPart(const BlockPart &) = default;
+		virtual void WriteDxf(DxfWriter &writer) override;
+		virtual ContentType GetContentType() const override;
+		std::string m_BlockName;   /*341, no default value*/
+		AcColor m_BlockColor;	   /*93*/
+		CDblPoint m_BlockPosition; /*15, no default value, sixteen 47 for 4x4 matrix is derived from this*/
+		CDblPoint m_BlockScale;	   /*16*/
+		double m_BlockRotation;	   /*46, in radians, 13 = cos, 23 = sin*/
+	};
+
+	struct DXF_API CONTEXT_DATA
+	{
+		CONTEXT_DATA();
+		CONTEXT_DATA(const CONTEXT_DATA &) = default;
+		void WriteDxf(DxfWriter &writer);
+		CDblPoint m_LandingPosition; /* 10, no default value*/
+		double m_TextHeight;		 /* 41*/
+		double m_ArrowSize;			 /* 140*/
+		double m_LandingGap;		 /* 145*/
+		/* 290 hasMText, 296 hasBlock*/
+		std::shared_ptr<Content> m_Content;
+		/*110, Mleader Plane Origin Point is first leader arrow point*/
+		LeaderPart m_Leader;
+	};
+
+	// http://help.autodesk.com/view/ACD/2016/ENU/?guid=GUID-72D20B8C-0F5E-4993-BEB7-0FCF94F32BE0
+	// http://docs.autodesk.com/ACD/2010/ENU/AutoCAD%202010%20User%20Documentation/index.html?url=WS73099cc142f487551d92abb10dc573c45d-7bf1.htm,topicNumber=d0e117972
+	// A multileader object typically consists of an arrowhead, a horizontal landing, a leader line or curve, and either a multiline text object or a block.
+	struct DXF_API AcadMLeader : public EntAttribute
+	{
+		AcadMLeader();
+		AcadMLeader(const AcadMLeader &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CONTEXT_DATA m_ContextData;
+		std::string m_LeaderStyle;	/*340*/
+		AcMLeaderType m_LeaderType; /*170*/
+		std::string m_LineType;		/*341*/
+		AcLineWeight m_LineWeight;	/*171*/
+		bool m_EnableLanding;		/*290*/
+		bool m_EnableDogleg;		/*291*/
+		//double m_DoglegLength; /*41, this is ignored by ACAD, only LEADER::m_DoglegLength matters*/
+		//double m_ArrowSize; /*42, this is ignored by ACAD, only CONTEXT_DATA::m_ArrowSize matters*/
+		// ContentType m_ContentType; /*172*/
+		//std::string m_TextStyle; /*343, this is ignored by ACAD, only MTEXT::m_TextStyle matters*/
+		std::vector<std::shared_ptr<AcadAttDef>> m_AttrDefs; /*330*/
+		//Text string value for an attribute definition, repeated once per attribute definition and applicable only for a block - type cell
+		std::vector<std::string> m_AttrValues; /*302, ""*/
+	};
+
+	enum CellType
+	{
+		TEXT_CELL = 1,
+		BLOCK_CELL = 2
+	};
+
+	struct DXF_API CellInTableStyle // Not CELLSTYLE, CELLSTYLE isn't implemented now
+	{
+		CellInTableStyle();
+		CellInTableStyle(const CellInTableStyle &) = default;
+		void WriteDxf(DxfWriter &writer);
+
+		double m_TextHeight;				/*140, 0.18*/
+		AcCellAlignment m_Alignment;		/*170, acMiddleCenter*/
+		AcColor m_TextColor;				/*62, acByBlock*/
+		AcColor m_BgColor;					/*63, acWhite*/
+		bool m_BgColorEnabled;				/*283, false*/
+		AcValueDataType m_CellDataType;		/*90, acGeneral*/
+		AcValueUnitType m_CellUnitType;		/*91, acUnitless*/
+											/*1, "", ???*/
+		AcLineWeight m_BorderLineWeight[6]; /*274-279, acLnWtByBlock*/
+		bool m_BorderVisible[6];			/*284-289, true*/
+		AcColor m_BorderColor[6];			/*64-69, acByBlock*/
+	};
+
+	//http://docs.autodesk.com/ACD/2014/CSY/index.html?url=files/GUID-0DBCA057-9F6C-4DEB-A66F-8A9B3C62FB1A.htm,topicNumber=d30e702776
+	struct DXF_API TableStyle /*in OBJECTS section*/
+	{
+		TableStyle();
+		TableStyle(const TableStyle &) = default;
+		void WriteDxf(DxfWriter &writer, const std::string &name, int handle);
+
+		double m_HorCellMargin;	   /*40, 0.06*/
+		double m_VerCellMargin;	   /*41, 0.06*/
+		bool m_HasNoTitle;		   /*280, false*/
+		bool m_HasNoColumnHeading; /*281, false*/
+		std::string m_TextStyle;   /*7, "Standard*/
+
+		// Don't understand why there are many CellInTableStyle(s)
+		std::vector<CellInTableStyle> m_Cells;
+	};
+
+	struct CellContent
+	{
+		virtual ~CellContent() = 0 {}
+		virtual void WriteDxf(DxfWriter &writer) = 0;
+		virtual CellType GetContentType() const = 0;
+	};
+
+	struct DXF_API CellText : public CellContent
+	{
+		CellText();
+		CellText(const CellText &) = default;
+		virtual void WriteDxf(DxfWriter &writer) override;
+		virtual CellType GetContentType() const override;
+
+		std::string m_Text;		 /*many 2 and one 1, such as {\fSimSun|b0|i0|c134|p2;ç‹äº”}*/
+								 /*many 303 and one 302, same as 2 and 1*/
+		std::string m_TextStyle; /*7, ""*/
+	};
+
+	struct DXF_API CellBlock : public CellContent
+	{
+		CellBlock();
+		CellBlock(const CellBlock &) = default;
+		virtual void WriteDxf(DxfWriter &writer) override;
+		virtual CellType GetContentType() const override;
+
+		std::string m_BlockName; /*340*/
+		double m_BlockScale;	 /*144*/
+		/*179, number of attribute definitions in the block*/
+		std::vector<std::shared_ptr<AcadAttDef>> m_AttrDefs; /*331*/
+		//Text string value for an attribute definition, repeated once per attribute definition and applicable only for a block - type cell
+		std::vector<std::string> m_AttrValues; /*300, ""*/
+	};
+
+	struct DXF_API Cell
+	{
+		Cell(CellType);
+		Cell(const Cell &) = default;
+		void WriteDxf(DxfWriter &writer);
+
+		//Type m_Type; /*171*/
+		int m_Flag;		/*172, 0*/
+		bool m_Merged;	/*173, false*/
+		bool m_AutoFit; /*174, false*/
+		// These 2 fields is applicable for merging cells
+		int m_ColSpan;				   /*175*/
+		int m_RowSpan;				   /*176*/
+		int m_OverrideFlag1; /*91, 0*/ /*or values in AcCellProperty*/
+		// A virtual edge is used when a grid line is shared by two cells.For example, if a table contains one row and two columns and it contains cell A and cell B, the central grid line contains the right edge of cell A and the left edge of cell B.One edge is real, and the other edge is virtual.The virtual edge points to the real edge; both edges have the same set of properties, including color, lineweight, and visibility.
+		int m_VirtualEdgeFlag;		 /*178, 0*/
+		double m_Rotation;			 /*145, 0.0, in radians, applicable for TEXT and BLOCK*/
+		AcCellAlignment m_Alignment; /*170, 0*/
+		AcColor m_BgColor;			 /*63*/
+		AcColor m_TextColor;		 /*64*/
+		bool m_BgColorEnabled;		 /*283, false*/
+		double m_TextHeight;		 /*140, 0.0*/
+		// 92, 0, Extended cell flags
+
+		/*301, CELL_VALUE*/
+		int m_Flag93;		 /*93, 6, ???*/
+		int m_Flag90;		 /*90, 4, ???*/
+		int m_OverrideFlag2; /*91, 0, ???*/
+		std::shared_ptr<CellContent> m_Content;
+		bool m_LeftBorderVisible;	/*288, true*/
+		bool m_RightBorderVisible;	/*285, true*/
+		bool m_TopBorderVisible;	/*289, true*/
+		bool m_BottomBorderVisible; /*286, true*/
+									/*304, ACVALUE_END*/
+	};
+
+	//http://help.autodesk.com/view/ACD/2016/ENU/?guid=GUID-D8CCD2F0-18A3-42BB-A64D-539114A07DA0
+	struct DXF_API AcadTable : public EntAttribute
+	{
+		AcadTable();
+		AcadTable(const AcadTable &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		// These are convinient functions to construct a table object.
+		void InitializeCells(int rowCount, int colCount, CellType ct);
+		void SetRowHeight(double height);
+		void SetColWidth(double width);
+		// It is programmer's responsibilty to ensure merged cells are not overlapped.
+		void MergeCells(int row, int col, int rowSpan, int colSpan);
+		Cell &GetCell(int row, int col);
+		CellText &GetCellText(int row, int col);
+		CellBlock &GetCellBlock(int row, int col);
+
+		/*??? 160, 3512*/
+		/*100, AcDbBlockReference*/
+		std::string m_TableBlockName; /*2, optional anonymous block begins with a *T value to render the whole table*/
+		CDblPoint m_InsertionPoint;	  /*10*/
+		/*100, AcDbTable*/
+		/*280, 0, 2010*/
+		std::string m_TableStyle; /*342*/
+		/*343, *T Block handle*/
+		/*11, 1.0, 0.0, Horizontal direction vector*/
+		/*90, 22, Flag for table value (unsigned integer)*/
+		int m_RowCount; /*91*/
+		int m_ColCount; /*92*/
+		/*93, 0, Flag for an override*/
+		/*94, 0, Flag for an override of border color*/
+		/*95, 0, Flag for an override of border lineweight*/
+		/*96, 0, Flag for an override of border visibility*/
+		std::vector<double> m_RowHeights; /*141*/
+		std::vector<double> m_ColWidths;  /*142*/
+		// There must be m_RowCount * m_ColCount Cell(s), for merged cells which m_Merged is true.*/
+		std::vector<Cell> m_Cells;
+		double m_HorCellMargin;		/*40, 0.0*/
+		double m_VerCellMargin;		/*41, 0.0*/
+		bool m_LeftBorderVisible;	/*288, true*/
+		bool m_RightBorderVisible;	/*285, true*/
+		bool m_TopBorderVisible;	/*289, true*/
+		bool m_BottomBorderVisible; /*286, true*/
+	};
+
+	struct DXF_API AcadLine : public EntAttribute
+	{
+		AcadLine();
+		AcadLine(const AcadLine &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_StartPoint;
+		CDblPoint m_EndPoint;
+	};
+
+	struct DXF_API AcadLWPLine : public EntAttribute
+	{
+		AcadLWPLine();
+		AcadLWPLine(const AcadLWPLine &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		DblPoints m_Vertices;
+		bool m_Closed;
+
+		void SetConstWidth(double width)
+		{
+			m_Width = width;
+		}
+		double GetConstWdith() { return m_Width; }
+		bool IsConstWidth()
+		{
+			return m_startWidths.empty();
+		}
+
+		void SetWidth(size_t Index, double startWidth, double endWidth);
+		void SetStartWidth(size_t Index, double startWidth);
+		void SetEndWidth(size_t Index, double endWidth);
+		void SetWidths(const std::vector<double> &startWidths, const std::vector<double> &endWidths);
+		const std::vector<double> &startWidths() { return m_startWidths; }
+		const std::vector<double> &endWidths() { return m_endWidths; }
+
+		void SetBulge(size_t Index, double Bulge);
+		void PushBulge(double bulge);
+		double GetBulge(size_t Index) const;
+		void SetBulges(std::vector<double> bulges);
+		bool HasBulges() const { return !m_Bulges.empty(); }
+
+	private:
+		double m_Width;
+		std::vector<double> m_Bulges;
+		std::vector<double> m_startWidths;
+		std::vector<double> m_endWidths;
+	};
+
+	struct DXF_API AcadMText : public EntAttribute
+	{
+		AcadMText();
+		AcadMText(const AcadMText &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_InsertionPoint; //å¯¹é½ç‚¹çš„åæ ‡
+		double m_Width;
+		double m_CharHeight;		//å€¼ä¸º0.0æ—¶è¡¨ç¤ºä½¿ç”¨æ–‡å­—æ ·å¼ä¸­çš„é«˜åº¦
+		std::string m_Text;			// such as hello\Pworld, \P stands for new line.
+		double m_LineSpacingFactor; //è¡Œè·ç³»æ•°ä¸ºï¼æ—¶è¡¨ç¤ºä½¿ç”¨è‡³å°‘è¡Œè·é£æ ¼acLineSpacingStyleAtLeast
+		double m_RotationAngle;		//in degrees
+		AcAttachmentPoint m_AttachmentPoint;
+		AcDrawingDirection m_DrawingDirection;
+		std::string m_StyleName;
+	};
+
+	struct DXF_API AcadPoint : public EntAttribute
+	{
+		AcadPoint();
+		AcadPoint(const AcadPoint &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_Point;
+	};
+
+	struct DXF_API AcadSolid : public EntAttribute
+	{
+		AcadSolid();
+		AcadSolid(const AcadSolid &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_Point1, m_Point2, m_Point3, m_Point4;
+	};
+
+	struct DXF_API AcadSpline : public EntAttribute
+	{
+		AcadSpline();
+		AcadSpline(const AcadSpline &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		//æ ·æ¡æ›²çº¿æ ‡å¿—ï¼ˆæŒ‰ä½ç¼–ç ï¼‰ï¼š
+		//	1 = é—­åˆæ ·æ¡æ›²çº¿
+		//	2 = å‘¨æœŸæ€§æ ·æ¡æ›²çº¿
+		//	4 = æœ‰ç†æ ·æ¡æ›²çº¿
+		//	8 = å¹³é¢
+		//	16 = çº¿æ€§ï¼ˆåŒæ—¶è¿˜è®¾ç½®å¹³é¢ä½ï¼‰
+		int m_Flag;
+		int m_Degree;
+		CDblPoint m_StartTangent;
+		CDblPoint m_EndTangent;
+		std::vector<double> m_Knots;
+		std::vector<double> m_Weights;
+		std::vector<CDblPoint> m_ControlPoints;
+		std::vector<CDblPoint> m_FitPoints;
+	};
+
+	struct DXF_API AcadText : public EntAttribute
+	{
+		AcadText();
+		AcadText(const AcadText &) = default;
+		void SetObliqueAngle(double a)
+		{
+			m_ObliqueAngle = a;
+			m_IsObliqueAngleValid = true;
+		}
+		void GetObliqueAngle(double& a, bool& valid) const
+		{
+			a = m_ObliqueAngle;
+			valid = m_IsObliqueAngleValid;
+		}
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		// m_BaseLeftPointå¯ä»¥ä»m_InsertionPoint, m_HorAlign, m_VerAlignç­‰ä¿¡æ¯è®¡ç®—å‡ºã€‚
+		CDblPoint m_BaseLeftPoint;	//æ–‡å­—å·¦ä¸‹è§’ç‚¹
+		CDblPoint m_InsertionPoint; //æ˜¯æ–‡å­—å¯¹é½ç‚¹ï¼Œè€Œéæ–‡å­—å·¦ä¸‹è§’ç‚¹
+		std::string m_Text;
+		double m_RotationAngle; //in degrees
+		//æ–‡å­—æ°´å¹³å¯¹æ­£ç±»å‹ï¼ˆå¯é€‰ï¼›é»˜è®¤å€¼ = 0ï¼‰æ•´æ•°ä»£ç ï¼ˆéæŒ‰ä½ç¼–ç ï¼‰
+		//	0 = å·¦å¯¹æ­£ï¼›1 = å±…ä¸­å¯¹æ­£ï¼›2 = å³å¯¹æ­£
+		//	3 = å¯¹é½ï¼ˆå¦‚æœå‚ç›´å¯¹é½ = 0ï¼‰
+		//	4 = ä¸­é—´ï¼ˆå¦‚æœå‚ç›´å¯¹é½ = 0ï¼‰
+		//	5 = ä¸¤ç«¯å¯¹é½ï¼ˆå¦‚æœå‚ç›´å¯¹é½ = 0ï¼‰
+		short m_HorAlign;
+		//æ–‡å­—å‚ç›´å¯¹æ­£ç±»å‹ï¼ˆå¯é€‰ï¼›é»˜è®¤å€¼ = 0ï¼‰æ•´æ•°ä»£ç ï¼ˆä¸æ˜¯æŒ‰ä½ç¼–ç ï¼‰
+		//	0 = åŸºçº¿å¯¹æ­£ï¼›1 = åº•ç«¯å¯¹æ­£ï¼›2 = å±…ä¸­å¯¹æ­£ï¼›3 = é¡¶ç«¯å¯¹æ­£
+		short m_VerAlign;
+		//VerAlign		HorAlign
+		//				0		1		2		3		4		5
+		//0-åŸºçº¿å¯¹æ­£		å·¦		ä¸­		å³		å¯¹é½		ä¸­é—´		ä¸¤ç«¯å¯¹é½
+		//1-åº•ç«¯å¯¹æ­£		å·¦ä¸‹		ä¸­ä¸‹		å³ä¸‹
+		//2-å±…ä¸­å¯¹æ­£		å·¦ä¸­		æ­£ä¸­		å³ä¸­
+		//3-é¡¶ç«¯å¯¹æ­£		å·¦ä¸Š		ä¸­ä¸Š		å³ä¸Š
+
+		std::string m_StyleName;
+		double m_Height;	  //å€¼ä¸º0.0æ—¶è¡¨ç¤ºä½¿ç”¨æ–‡å­—æ ·å¼ä¸­çš„é«˜åº¦
+		double m_WidthFactor; //å€¼ä¸º0.0æ—¶è¡¨ç¤ºä½¿ç”¨æ–‡å­—æ ·å¼ä¸­çš„å®½åº¦ç³»æ•°
+
+	private:
+		bool m_IsObliqueAngleValid; //å€¼ä¸ºfalseæ—¶è¡¨ç¤ºä½¿ç”¨æ–‡å­—æ ·å¼ä¸­çš„æ–‡å­—å€¾è§’
+		double m_ObliqueAngle;		//in degrees
+	};
+
+	struct DXF_API AcadViewport : public EntAttribute
+	{
+		AcadViewport();
+		AcadViewport(const AcadViewport &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_PaperspaceCenter;
+		double m_PaperspaceWidth;
+		double m_PaperspaceHeight;
+		CDblPoint m_ModelSpaceCenter;
+		double m_ModelSpaceHeight;
+		double m_TwistAngle; //in degrees
+		bool m_locked;
+
+		// if m_ClipEnt is valid, viewport will be clipped by an entity, usually a polygon.
+		std::weak_ptr<EntAttribute> m_ClipEnt;
+	};
+
+	struct DXF_API AcadXLine : public EntAttribute
+	{
+		AcadXLine();
+		AcadXLine(const AcadXLine &) = default;
+		virtual void WriteDxf(DxfWriter &writer, bool bInPaperSpace) override;
+
+		CDblPoint m_First;
+		CDblPoint m_Second;
+	};
+
+	struct DXF_API LayoutData
+	{
+		LayoutData();
+		void WriteDxf(DxfWriter &writer);
+		// convenient functions to add polygonal AcadViewport
+		void AddPolygonalViewport(const DblPoints &polygonPS, const CDblPoint &centerMS, double heighMS, double twistAngle /*degrees*/);
+		void AddPolygonalViewportByWidth(const DblPoints &polygonMS, const CDblPoint &centerPS, double widthPS, double twistAngle /*degrees*/);
+		void AddPolygonalViewportByScale(const DblPoints &polygonMS, const CDblPoint &centerPS, double scale, double twistAngle /*degrees*/);
+
+		// Must be *Paper_Space, *Paper_Space0, *Paper_Space1, ...
+		// Don't set it if you create DxfData manually. DxfWriter will set it.
+		std::string m_BlockName;
+		PlotSettings m_PlotSettings;
+		// m_MinLim and m_MaxLim defines the limits in paperspace.
+		CDblPoint m_MinLim; // in millimeters
+		CDblPoint m_MaxLim; // in millimeters
+		// m_MinExt and m_MaxExt defines the default viewport size in paperspace.
+		CDblPoint m_MinExt; // in millimeters
+		CDblPoint m_MaxExt; // in millimeters
+		// Line, arc, dims, ... and AcadViewport objects
+		EntityList m_Objects;
+		// Don't set it if you create DxfData manually. DxfWriter will set it.
+		int m_LayoutOrder;
+	};
+
+	struct DXF_API BlockDef
+	{
+		BlockDef() = default;
+
+		CDblPoint m_InsertPoint;
+		EntityList m_Objects;
+	};
+
+} // namespace DXF

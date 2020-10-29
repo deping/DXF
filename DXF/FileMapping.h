@@ -17,18 +17,19 @@ namespace DXF
 	{
 	public:
 		CFileMapping();
-		CFileMapping(const char* FileName);
+		CFileMapping(const char *FileName);
 		~CFileMapping(void);
-		void Open(const char* FileName);
+		void Open(const char *FileName);
 		void Close();
 
-		const unsigned char* GetStart() const{ return m_pStart;}
-		const unsigned char* GetEnd() const{ return m_pEnd;}
+		const unsigned char *GetStart() const { return m_pStart; }
+		const unsigned char *GetEnd() const { return m_pEnd; }
+
 	private:
-		HANDLE m_hFile;//´ò¿ªµÄÎÄ¼ş¾ä±ú
-		HANDLE m_hMapFile;//ÎÄ¼şÓ³Éä¾ä±ú
-		const unsigned char* m_pStart;//ÎÄ¼şµÄÆğµãÓ³ÉäÖÁĞéÄâÄÚ´æµÄÎ»ÖÃ
-		const unsigned char* m_pEnd;//ÎÄ¼şµÄÖÕµãÓ³ÉäÖÁĞéÄâÄÚ´æµÄÎ»ÖÃ
+		HANDLE m_hFile;				   //æ‰“å¼€çš„æ–‡ä»¶å¥æŸ„
+		HANDLE m_hMapFile;			   //æ–‡ä»¶æ˜ å°„å¥æŸ„
+		const unsigned char *m_pStart; //æ–‡ä»¶çš„èµ·ç‚¹æ˜ å°„è‡³è™šæ‹Ÿå†…å­˜çš„ä½ç½®
+		const unsigned char *m_pEnd;   //æ–‡ä»¶çš„ç»ˆç‚¹æ˜ å°„è‡³è™šæ‹Ÿå†…å­˜çš„ä½ç½®
 	};
 
-}
+} // namespace DXF
